@@ -1,0 +1,22 @@
+# ~/.config/systemd/user/arc100-hmi.service
+# 부팅(자동 로그인) 후 ARC-100 HMI 앱을 전체화면으로 시작하고, 종료되면 5초 뒤 다시 시작한다.
+[Unit]
+Description=ARC-100 Air Recycle Controller HMI
+After=default.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/opt/arc100/bin/arc100-run
+Restart=always
+RestartSec=5
+Environment=GDK_BACKEND=wayland,x11
+Environment=ARC100_CONFIG=/etc/arc100/site.json
+Environment=ARC100_DATA_DIR=/var/lib/arc100
+Environment=ARC100_HEALTH_DIR=/opt/arc100/health
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=arc100-hmi
+
+[Install]
+WantedBy=default.target

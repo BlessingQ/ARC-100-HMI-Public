@@ -1,0 +1,6 @@
+[Unit]
+Description=ARC-100 HMI health check (auto rollback on repeated boot failure)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/arc100/bin/arc100-healthcheck

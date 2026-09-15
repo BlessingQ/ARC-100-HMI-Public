@@ -1,0 +1,17 @@
+# ARC-100 RS-485 회선 고정 이름: /dev/rs485-modbus, rs485-ioc, rs485-inverter, rs485-hm100b
+#
+# arc100-list-serial 로 실제 컨버터의 serial / 인터페이스 번호 / ID_PATH 를 확인한 뒤
+# 아래 자리표시자(<SERIAL>, <PATH_CHx>)를 채우고 앞의 # 을 지운다. 쓰지 않는 블록은 그대로 둔다.
+# 적용: sudo udevadm control --reload-rules && sudo udevadm trigger && ls -l /dev/rs485-*
+#
+# A. FTDI 4채널 컨버터 (칩 고유 serial 있음) — 권장. 인터페이스 00~03 = ch1~ch4
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{serial}=="<SERIAL>", ENV{ID_USB_INTERFACE_NUM}=="00", SYMLINK+="rs485-modbus",   MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{serial}=="<SERIAL>", ENV{ID_USB_INTERFACE_NUM}=="01", SYMLINK+="rs485-ioc",      MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{serial}=="<SERIAL>", ENV{ID_USB_INTERFACE_NUM}=="02", SYMLINK+="rs485-inverter", MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{serial}=="<SERIAL>", ENV{ID_USB_INTERFACE_NUM}=="03", SYMLINK+="rs485-hm100b",   MODE="0660", GROUP="dialout"
+#
+# B. serial 이 없는 컨버터(CH340 등) — USB 물리 포트 경로로 고정. 포트를 바꿔 꽂으면 이름이 바뀐다.
+#SUBSYSTEM=="tty", ENV{ID_PATH}=="<PATH_CH1>", SYMLINK+="rs485-modbus",   MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ENV{ID_PATH}=="<PATH_CH2>", SYMLINK+="rs485-ioc",      MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ENV{ID_PATH}=="<PATH_CH3>", SYMLINK+="rs485-inverter", MODE="0660", GROUP="dialout"
+#SUBSYSTEM=="tty", ENV{ID_PATH}=="<PATH_CH4>", SYMLINK+="rs485-hm100b",   MODE="0660", GROUP="dialout"

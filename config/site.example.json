@@ -1,0 +1,62 @@
+{
+  "site_id": "arc100-01",
+  "site_name": "해림종돈 돈방 101~104",
+  "buses": {
+    "modbus":   { "port": "/dev/rs485-modbus",   "baud": 9600 },
+    "ioc":      { "port": "/dev/rs485-ioc",      "baud": 9600 },
+    "inverter": { "port": "/dev/rs485-inverter", "baud": 9600 },
+    "hm100b":   { "port": "/dev/rs485-hm100b",   "baud": 9600 }
+  },
+  "inverters": [
+    { "tag": "INV1", "slave": 21, "role": "supply",  "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null },
+    { "tag": "INV2", "slave": 22, "role": "exhaust", "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null },
+    { "tag": "INV3", "slave": 23, "role": "room",    "kw_code": 7, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": 70400 }
+  ],
+  "ioc": [
+    { "id": 1, "gwid": 0, "ain_frame": { "pcode": 1, "length": 26 } },
+    { "id": 2, "gwid": 0 }
+  ],
+  "outputs": {
+    "DMP_EXHAUST_OPEN": [1, 1], "DMP_EXHAUST_CLOSE": [1, 2],
+    "DMP_RECIRC_OPEN":  [1, 3], "DMP_RECIRC_CLOSE":  [1, 4],
+    "PUMP_CIRC_1": [1, 5], "PUMP_CIRC_2": [1, 6], "PUMP_CIRC_3": [1, 7],
+    "PUMP_DRAIN": [1, 8], "PUMP_BOOST": [1, 9], "ALARM_COMMON": [1, 10],
+    "MC_INV1": [2, 1], "MC_INV2": [2, 2], "MC_INV3": [2, 3]
+  },
+  "inputs": {
+    "E_STOP": [1, 1], "LEVEL_ACID_STRONG": [1, 2], "LEVEL_ACID_WEAK": [1, 3], "ROOM_FAN_EOCR_TRIP": [1, 4],
+    "INV1_TRIP": [2, 1], "INV2_TRIP": [2, 2], "INV3_TRIP": [2, 3]
+  },
+  "dampers": [
+    { "tag": "DMP_EXHAUST", "open": "DMP_EXHAUST_OPEN", "close": "DMP_EXHAUST_CLOSE", "stroke_s": 60, "deadtime_ms": 500 },
+    { "tag": "DMP_RECIRC",  "open": "DMP_RECIRC_OPEN",  "close": "DMP_RECIRC_CLOSE",  "stroke_s": 60, "deadtime_ms": 500 }
+  ],
+  "sensor_nodes": [
+    { "index": 1,  "slave": 2,  "zone": "R101", "has_nh3": true,  "dol_ain": 1 },
+    { "index": 2,  "slave": 3,  "zone": "R101", "has_nh3": false },
+    { "index": 3,  "slave": 4,  "zone": "R101", "has_nh3": false },
+    { "index": 4,  "slave": 5,  "zone": "R102", "has_nh3": true,  "dol_ain": 2 },
+    { "index": 5,  "slave": 6,  "zone": "R102", "has_nh3": false },
+    { "index": 6,  "slave": 7,  "zone": "R102", "has_nh3": false },
+    { "index": 7,  "slave": 8,  "zone": "R103", "has_nh3": true,  "dol_ain": 3 },
+    { "index": 8,  "slave": 9,  "zone": "R103", "has_nh3": false },
+    { "index": 9,  "slave": 10, "zone": "R103", "has_nh3": false },
+    { "index": 10, "slave": 11, "zone": "R104", "has_nh3": true,  "dol_ain": 4 },
+    { "index": 11, "slave": 12, "zone": "R104", "has_nh3": false },
+    { "index": 12, "slave": 13, "zone": "R104", "has_nh3": false },
+    { "index": 13, "slave": 14, "zone": "CORRIDOR", "has_nh3": false }
+  ],
+  "hm100": [
+    { "bus": "modbus", "label": "강산성" },
+    { "bus": "hm100b", "label": "약산성" }
+  ],
+  "control": {
+    "tset_c": 24.0, "temp_tolerance_c": 1.0, "rh_low": 50, "rh_high": 70,
+    "nh3_high_ppm": 25, "co2_high_ppm": 5000,
+    "vent_min": 0, "vent_max": 100, "mix_min": 0, "mix_max": 80,
+    "period_s": 60, "vent_semantics": "TOTAL_SUPPLY",
+    "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13"
+  },
+  "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
+  "update": { "repo": "BlessingQ/ARC-100-HMI", "channel": "stable", "check_interval_h": 6 }
+}

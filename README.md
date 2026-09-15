@@ -1,0 +1,153 @@
+# ARC-100 HMI — 설치 안내서
+
+㈜아이온텍 **ARC-100 공기재순환 제어기**의 터치 HMI/제어 앱을 **Raspberry Pi 5**에 설치·자동 시작·자동 업데이트하는 저장소입니다.
+
+> 이 저장소에는 **설치 스크립트와 빌드된 앱 패키지(Releases)만** 있습니다. 앱 소스 코드는 포함하지 않습니다.
+
+## 1. 대상 환경
+
+| 항목 | 요구 사항 |
+|---|---|
+| 보드 | Raspberry Pi 5 (4 GB 이상 권장) |
+| OS | Raspberry Pi OS **64-bit, Desktop** (Bookworm 이상). Lite 불가 — 화면이 필요합니다 |
+| 화면 | 10.1" 1920×1080 정전식 터치 (HDMI + USB 터치) |
+| 통신 | 4채널 절연형 USB-RS485 컨버터 1대 (ch1 센서/HM-100 #1, ch2 IOC-100 ×2, ch3 인버터 ×3, ch4 HM-100 #2) |
+| 네트워크 | 설치·업데이트 시에만 인터넷 필요. 운전 중에는 불필요 |
+
+## 2. 설치 (한 줄)
+
+Raspberry Pi 5의 터미널에서:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI/main/bootstrap.sh | bash
+```
+
+이 명령이 하는 일:
+
+1. `git` 설치 → 이 저장소를 `~/ARC-100-HMI`에 클론
+2. `install.sh`를 `sudo`로 실행
+   - 필수 패키지 설치, 사용자를 `dialout` 그룹에 추가
+   - `/opt/arc100/` 구성 (`releases/`, `current` 링크, `bin/`, `health/`)
+   - GitHub **Releases의 최신 패키지**를 내려받아 **sha256 검증** 후 설치
+   - `/etc/arc100/site.json` 설정 파일 생성 (이미 있으면 유지)
+   - RS-485 udev 규칙 템플릿 설치 (`/dev/rs485-*` 고정 이름)
+   - 데스크톱 **자동 로그인**, **화면 꺼짐 방지** (`raspi-config`)
+   - **systemd 사용자 서비스** 등록 → **부팅 시 앱 자동 시작**, 죽으면 5초 후 재시작
+   - 헬스체크 타이머 등록 → 업데이트 후 기동 실패가 반복되면 **자동 롤백**
+3. 완료 후 `sudo reboot` 하면 자동 로그인 → 앱이 전체화면으로 시작됩니다.
+
+수동 설치도 같습니다:
+
+```bash
+git clone https://github.com/BlessingQ/ARC-100-HMI.git ~/ARC-100-HMI
+cd ~/ARC-100-HMI
+sudo ./install.sh --user $USER
+```
+
+옵션:
+
+| 옵션 | 설명 |
+|---|---|
+| `--local app.tar.gz` | GitHub 대신 직접 빌드한 패키지를 설치 (Pi 5 빌드 머신에서 스모크 테스트용) |
+| `--user pi` | 앱을 실행할 데스크톱 사용자 (기본: sudo를 호출한 사용자) |
+| `--no-kiosk` | 자동 로그인·화면 꺼짐 설정을 건드리지 않음 |
+
+## 3. 설치 후 반드시 할 일 — RS-485 포트 고정
+
+`/dev/ttyUSB0~3` 번호는 재부팅 시 바뀔 수 있어 반드시 고정 이름을 씁니다.
+
+```bash
+arc100-list-serial                       # 컨버터의 serial / 인터페이스 번호 / ID_PATH 확인
+sudo nano /etc/udev/rules.d/99-arc100-rs485.rules   # <SERIAL> 등 자리표시자를 채우고 # 제거
+sudo udevadm control --reload-rules && sudo udevadm trigger
+ls -l /dev/rs485-*                       # rs485-modbus, rs485-ioc, rs485-inverter, rs485-hm100b 4개가 보여야 함
+```
+
+| 장치명 | 채널 | 연결 장치 |
+|---|---|---|
+| `/dev/rs485-modbus` | ch1 | 아이온텍 SensorNode ×13 (ID 2~14) + HM-100 #1 (ID 1) |
+| `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1), IOC-100 #2 (ID 2) |
+| `/dev/rs485-inverter` | ch3 | LSLV-G100 인버터 국번 21 / 22 / 23 |
+| `/dev/rs485-hm100b` | ch4 | HM-100 #2 (ID 1) |
+
+4개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** 기동합니다 (표시만 함).
+
+## 4. 설정 파일 `/etc/arc100/site.json`
+
+`config/site.example.json`이 초기값으로 복사됩니다. 현장에 맞게 고칠 항목:
+
+- `control.tset_c`, `rh_low/high`, `nh3_high_ppm`, `co2_high_ppm`, `head_count`, `cmh_per_head` — 제어 인자 (앱 설정 화면에서도 변경 가능)
+- `dampers[].stroke_s` — 댐퍼 전개~전폐 소요 시간 (시운전 실측)
+- `inverters[].rated_cmh_60hz` — 팬 정격 풍량 (환기량 표시용)
+- `update.repo` — 릴리스 저장소 (기본 `BlessingQ/ARC-100-HMI`)
+
+업데이트를 해도 이 파일은 덮어쓰지 않습니다.
+
+## 5. 운영 명령
+
+| 명령 | 설명 |
+|---|---|
+| `arc100-status` | 버전·서비스·포트·헬스 상태 요약 |
+| `journalctl --user -u arc100-hmi -f` | 앱 로그 실시간 보기 |
+| `systemctl --user restart arc100-hmi` | 앱 재시작 |
+| `arc100-fetch-release --activate` | 최신 릴리스 내려받아 적용 (앱 화면의 **업데이트 확인/적용** 버튼과 동일) |
+| `arc100-fetch-release --tag v1.2.0 --activate` | 특정 버전 적용 |
+| `arc100-rollback` | 직전 버전으로 되돌리기 |
+| `sudo ~/ARC-100-HMI/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
+
+## 6. 자동 업데이트 동작
+
+1. 앱이 6시간마다(또는 설정 화면의 **업데이트 확인** 터치 시) `https://api.github.com/repos/BlessingQ/ARC-100-HMI/releases/latest`를 조회합니다. 토큰 없음(공개 저장소).
+2. 새 버전이 있으면 `arc100-hmi-linux-arm64-vX.Y.Z.tar.gz`와 `.sha256`을 내려받아 검증하고 `/opt/arc100/releases/vX.Y.Z`에 풀어 둡니다.
+3. **운전자가 화면에서 "지금 적용"을 누를 때만** `current` 링크를 바꾸고 앱을 재시작합니다 (약 20초). 재시작 중 인버터는 자체 지령 상실 보호(30 Hz)로 팬을 유지합니다.
+4. 재시작 후 60초 안에 정상 기동 마커(`/opt/arc100/health/boot_ok`)가 없으면 이전 버전으로 자동 롤백합니다.
+
+## 7. 릴리스 패키지 규격 (빌드 담당자용)
+
+```
+arc100-hmi-linux-arm64-v1.2.0.tar.gz
+├── manifest.json        {"version":"1.2.0","min_from":"1.0.0","notes":"...","built":"2026-09-15T12:00:00+09:00"}
+└── bundle/              flutter build linux --release 의 bundle 폴더 그대로
+    ├── arc100_hmi       실행 파일
+    ├── lib/             libflutter_linux_gtk.so, libserialport.so 등
+    └── data/
+arc100-hmi-linux-arm64-v1.2.0.tar.gz.sha256   (sha256sum 출력 형식)
+```
+
+Release 태그는 `vX.Y.Z`. 자산 이름 패턴 `arc100-hmi-linux-arm64-*.tar.gz`가 아니면 설치 스크립트가 찾지 못합니다.
+
+## 8. 문제 해결
+
+| 증상 | 확인 |
+|---|---|
+| 부팅 후 화면이 바탕화면만 보임 | `arc100-status` → `current` 링크가 있는지, `journalctl --user -u arc100-hmi -n 50` |
+| 앱이 켜졌다 꺼졌다 반복 | 헬스체크가 3회 실패 후 롤백합니다. 로그로 원인 확인 후 `arc100-fetch-release --activate` 재시도 |
+| 포트 열기 실패 (Permission denied) | 사용자가 `dialout` 그룹인지 (`groups`). 설치 후 **재로그인/재부팅** 필요 |
+| `/dev/rs485-*`가 없음 | 3장의 udev 규칙. `arc100-list-serial`로 값 재확인 |
+| HM-100 무응답 | 출고 보레이트가 19200인 개체가 있습니다. `site.json`의 `baud`를 19200으로 바꿔 시험 |
+| 인버터 지령이 반영되지 않음 | 인버터 `drv=3`, `Frq=6`(Int 485), `CM.01` 국번 21/22/23, `CM.03=3`(9600), `CM.04=0`(8N1) |
+| 터치가 안 됨 / 전체화면이 안 됨 | Wayland(labwc) 문제일 수 있음. `sudo raspi-config` → Advanced Options → Wayland → **X11** 로 전환 후 재부팅 |
+
+## 9. 저장소 구성
+
+```
+bootstrap.sh              curl 한 줄 설치 진입점
+install.sh                본 설치 스크립트
+uninstall.sh              제거
+scripts/
+  arc100-fetch-release.sh   Releases 다운로드·sha256 검증·설치
+  arc100-apply-update.sh    current 링크 교체·재시작·헬스 대기·실패 시 롤백
+  arc100-rollback.sh        직전 버전 복귀
+  arc100-healthcheck.sh     2분 타이머, crash-loop 시 자동 롤백
+  arc100-run.sh             디스플레이 준비 대기 후 앱 실행 (systemd ExecStart)
+  arc100-list-serial.sh     USB-RS485 식별 정보 출력
+  arc100-status.sh          상태 요약
+config/
+  arc100-hmi.service        systemd 사용자 서비스 (부팅 자동 시작)
+  arc100-healthcheck.service / .timer
+  99-arc100-rs485.rules     udev 템플릿
+  site.example.json         설정 초기값
+```
+
+---
+㈜아이온텍 (IONTEC Co., Ltd.) · ARC-100 Air Recycle Controller
