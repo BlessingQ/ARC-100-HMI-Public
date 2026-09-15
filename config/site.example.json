@@ -1,6 +1,7 @@
 {
   "site_id": "arc100-01",
   "site_name": "해림종돈 돈방 101~104",
+  "admin_pin": "1234",
   "buses": {
     "modbus":   { "port": "/dev/rs485-modbus",   "baud": 9600 },
     "ioc":      { "port": "/dev/rs485-ioc",      "baud": 9600 },
