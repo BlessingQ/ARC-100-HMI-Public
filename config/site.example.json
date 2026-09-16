@@ -59,7 +59,7 @@
     "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13"
   },
   "weather": {
-    "bus": "weather", "model": "Spectrum WatchDog 3250DR", "period_s": 5, "stale_s": 300,
+    "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
     "format": { "separator": ",", "prefix": "", "temp_unit": "C", "query": "",
                 "fields": { "temp": 1, "rh": 2, "wind_ms": 3, "wind_dir": 4, "solar_wm2": 5, "rain_mm": 6 } }
   },
