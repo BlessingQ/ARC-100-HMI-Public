@@ -6,7 +6,8 @@
     "modbus":   { "port": "/dev/rs485-modbus",   "baud": 9600 },
     "ioc":      { "port": "/dev/rs485-ioc",      "baud": 9600 },
     "inverter": { "port": "/dev/rs485-inverter", "baud": 9600 },
-    "hm100b":   { "port": "/dev/rs485-hm100b",   "baud": 9600 }
+    "hm100b":   { "port": "/dev/rs485-hm100b",   "baud": 9600 },
+    "weather":  { "port": "/dev/rs232-weather",  "baud": 9600 }
   },
   "inverters": [
     { "tag": "INV1", "slave": 21, "role": "supply",  "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null },
@@ -56,6 +57,11 @@
     "vent_min": 0, "vent_max": 100, "mix_min": 0, "mix_max": 80,
     "period_s": 60, "vent_semantics": "TOTAL_SUPPLY",
     "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13"
+  },
+  "weather": {
+    "bus": "weather", "model": "Spectrum WatchDog 3250DR", "period_s": 5, "stale_s": 300,
+    "format": { "separator": ",", "prefix": "", "temp_unit": "C", "query": "",
+                "fields": { "temp": 1, "rh": 2, "wind_ms": 3, "wind_dir": 4, "solar_wm2": 5, "rain_mm": 6 } }
   },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
   "update": { "repo": "BlessingQ/ARC-100-HMI", "channel": "stable", "check_interval_h": 6 }

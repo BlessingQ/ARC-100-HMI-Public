@@ -11,7 +11,7 @@
 | 보드 | Raspberry Pi 5 (4 GB 이상 권장) |
 | OS | Raspberry Pi OS **64-bit, Desktop** (Bookworm 이상). Lite 불가 — 화면이 필요합니다 |
 | 화면 | 10.1" 1920×1080 정전식 터치 (HDMI + USB 터치) |
-| 통신 | 4채널 절연형 USB-RS485 컨버터 1대 (ch1 센서/HM-100 #1, ch2 IOC-100 ×2, ch3 인버터 ×3, ch4 HM-100 #2) |
+| 통신 | 4채널 절연형 USB-RS485 컨버터 1대 (ch1 센서/HM-100 #1, ch2 IOC-100 ×2, ch3 인버터 ×3, ch4 HM-100 #2) + USB-RS232 컨버터 1대 (ch5 외부 기상대 WatchDog 3250DR) |
 | 네트워크 | 설치·업데이트 시에만 인터넷 필요. 운전 중에는 불필요 |
 
 ## 2. 설치 (한 줄)
@@ -60,7 +60,7 @@ sudo ./install.sh --user $USER
 arc100-list-serial                       # 컨버터의 serial / 인터페이스 번호 / ID_PATH 확인
 sudo nano /etc/udev/rules.d/99-arc100-rs485.rules   # <SERIAL> 등 자리표시자를 채우고 # 제거
 sudo udevadm control --reload-rules && sudo udevadm trigger
-ls -l /dev/rs485-*                       # rs485-modbus, rs485-ioc, rs485-inverter, rs485-hm100b 4개가 보여야 함
+ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-inverter, rs485-hm100b + rs232-weather
 ```
 
 | 장치명 | 채널 | 연결 장치 |
@@ -69,8 +69,9 @@ ls -l /dev/rs485-*                       # rs485-modbus, rs485-ioc, rs485-invert
 | `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1), IOC-100 #2 (ID 2) |
 | `/dev/rs485-inverter` | ch3 | LSLV-G100 인버터 국번 21 / 22 / 23 |
 | `/dev/rs485-hm100b` | ch4 | HM-100 #2 (ID 1) |
+| `/dev/rs232-weather` | ch5 | 외부 기상대 스펙트럼 WatchDog 3250DR (AUX RS-232 9600) — 없으면 복도 센서로 대체 |
 
-4개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** 기동합니다 (표시만 함).
+RS-485 4개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** 기동합니다 (표시만 함).
 
 ## 4. 설정 파일 `/etc/arc100/site.json`
 
