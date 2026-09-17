@@ -53,7 +53,8 @@
     "nh3_high_ppm": 25, "co2_high_ppm": 5000,
     "vent_min": 0, "vent_max": 100, "mix_min": 0, "mix_max": 80,
     "period_s": 60, "vent_semantics": "TOTAL_SUPPLY",
-    "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13"
+    "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13",
+    "gas_aggregate": "max", "tout_source": "corridor"
   },
   "weather": {
     "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
