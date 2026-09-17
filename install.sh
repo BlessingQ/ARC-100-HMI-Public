@@ -10,6 +10,7 @@
 #   6. 키오스크: 데스크톱 자동 로그인, 화면 꺼짐 방지
 #   7. systemd 사용자 서비스 등록 -> 부팅 시 앱 자동 시작, 죽으면 자동 재시작
 #   8. 헬스체크 타이머 등록 -> 업데이트 후 기동 실패 3회 시 자동 롤백
+#   9. 시각 도우미 /usr/local/sbin/arc100-timesync + sudoers (앱에서 NTP/RTC 전환·수동 시각 설정)
 #
 # 사용법:
 #   sudo ./install.sh                     # 최신 릴리스 설치
@@ -82,6 +83,12 @@ ln -sfn "$APP_ROOT/bin/arc100-apply-update"  /usr/local/bin/arc100-apply-update
 ln -sfn "$APP_ROOT/bin/arc100-rollback"      /usr/local/bin/arc100-rollback
 ln -sfn "$APP_ROOT/bin/arc100-list-serial"   /usr/local/bin/arc100-list-serial
 printf 'ARC100_REPO=%s\n' "$REPO" > "$APP_ROOT/repo.env"
+
+# 시각 소스(NTP ↔ RTC/수동) 도우미 — root 소유·root 전용 경로에 두고, 앱 사용자에게 이 명령만 sudo 허용
+install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-timesync.sh" /usr/local/sbin/arc100-timesync
+printf '%s ALL=(root) NOPASSWD: /usr/local/sbin/arc100-timesync\n' "$APP_USER" > /etc/sudoers.d/arc100-timesync
+chmod 0440 /etc/sudoers.d/arc100-timesync
+visudo -cf /etc/sudoers.d/arc100-timesync >/dev/null || { rm -f /etc/sudoers.d/arc100-timesync; warn "sudoers 검증 실패 — 시간 설정 기능 비활성"; }
 
 # ── 3. 앱 패키지 ─────────────────────────────────────────────────────────────
 if [[ -n "$LOCAL_PKG" ]]; then

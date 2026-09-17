@@ -15,6 +15,7 @@ rm -f "$U/arc100-hmi.service" "$U/arc100-healthcheck.service" "$U/arc100-healthc
 rm -f /usr/local/bin/arc100-status /usr/local/bin/arc100-fetch-release /usr/local/bin/arc100-apply-update \
       /usr/local/bin/arc100-rollback /usr/local/bin/arc100-list-serial
 rm -rf /opt/arc100
+rm -f /usr/local/sbin/arc100-timesync /etc/sudoers.d/arc100-timesync
 rm -f /etc/udev/rules.d/99-arc100-rs485.rules
 udevadm control --reload-rules || true
 
