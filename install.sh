@@ -18,7 +18,7 @@
 #   sudo ./install.sh --no-kiosk          # 자동 로그인/화면 설정은 건드리지 않음
 set -euo pipefail
 
-REPO="${ARC100_REPO:-BlessingQ/ARC-100-HMI}"
+REPO="${ARC100_REPO:-BlessingQ/ARC-100-HMI-Public}"
 APP_ROOT=/opt/arc100
 CONF_DIR=/etc/arc100
 DATA_DIR=/var/lib/arc100

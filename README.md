@@ -19,12 +19,12 @@
 Raspberry Pi 5의 터미널에서:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI/master/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI-Public/master/bootstrap.sh | bash
 ```
 
 이 명령이 하는 일:
 
-1. `git` 설치 → 이 저장소를 `~/ARC-100-HMI`에 클론
+1. `git` 설치 → 이 저장소를 `~/ARC-100-HMI-Public`에 클론
 2. `install.sh`를 `sudo`로 실행
    - 필수 패키지 설치, 사용자를 `dialout` 그룹에 추가
    - `/opt/arc100/` 구성 (`releases/`, `current` 링크, `bin/`, `health/`)
@@ -39,8 +39,8 @@ curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI/master/bootst
 수동 설치도 같습니다:
 
 ```bash
-git clone https://github.com/BlessingQ/ARC-100-HMI.git ~/ARC-100-HMI
-cd ~/ARC-100-HMI
+git clone https://github.com/BlessingQ/ARC-100-HMI-Public.git ~/ARC-100-HMI-Public
+cd ~/ARC-100-HMI-Public
 sudo ./install.sh --user $USER
 ```
 
@@ -80,7 +80,7 @@ RS-485 4개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 - `control.tset_c`, `rh_low/high`, `nh3_high_ppm`, `co2_high_ppm`, `head_count`, `cmh_per_head` — 제어 인자 (앱 설정 화면에서도 변경 가능)
 - `dampers[].stroke_s` — 댐퍼 전개~전폐 소요 시간 (시운전 실측)
 - `inverters[].rated_cmh_60hz` — 팬 정격 풍량 (환기량 표시용)
-- `update.repo` — 릴리스 저장소 (기본 `BlessingQ/ARC-100-HMI`)
+- `update.repo` — 릴리스 저장소 (기본 `BlessingQ/ARC-100-HMI-Public`)
 - `admin_pin` — 관리자 PIN (기본 `1234`). 설정 저장·통신 포트 변경·트립 리셋·세척 모드·업데이트 적용에 필요
 - `buses.*.port` — 회선별 포트. 앱의 **설정 > 통신 포트** 화면에서 터치로 고를 수 있으며(발견된 `/dev/rs485-*`·`/dev/ttyUSB*` 목록), 저장하면 즉시 재연결됩니다
 
@@ -96,11 +96,11 @@ RS-485 4개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | `arc100-fetch-release --activate` | 최신 릴리스 내려받아 적용 (앱 화면의 **업데이트 확인/적용** 버튼과 동일) |
 | `arc100-fetch-release --tag v1.2.0 --activate` | 특정 버전 적용 |
 | `arc100-rollback` | 직전 버전으로 되돌리기 |
-| `sudo ~/ARC-100-HMI/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
+| `sudo ~/ARC-100-HMI-Public/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
 
 ## 6. 자동 업데이트 동작
 
-1. 앱이 6시간마다(또는 설정 화면의 **업데이트 확인** 터치 시) `https://api.github.com/repos/BlessingQ/ARC-100-HMI/releases/latest`를 조회합니다. 토큰 없음(공개 저장소).
+1. 앱이 6시간마다(또는 설정 화면의 **업데이트 확인** 터치 시) `https://api.github.com/repos/BlessingQ/ARC-100-HMI-Public/releases/latest`를 조회합니다. 토큰 없음(공개 저장소).
 2. 새 버전이 있으면 `arc100-hmi-linux-arm64-vX.Y.Z.tar.gz`와 `.sha256`을 내려받아 검증하고 `/opt/arc100/releases/vX.Y.Z`에 풀어 둡니다.
 3. **운전자가 화면에서 "지금 적용"을 누를 때만** `current` 링크를 바꾸고 앱을 재시작합니다 (약 20초). 재시작 중 인버터는 자체 지령 상실 보호(30 Hz)로 팬을 유지합니다.
 4. 재시작 후 60초 안에 정상 기동 마커(`/opt/arc100/health/boot_ok`)가 없으면 이전 버전으로 자동 롤백합니다.

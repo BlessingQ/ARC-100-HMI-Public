@@ -13,7 +13,7 @@ set -euo pipefail
 
 APP_ROOT=/opt/arc100
 [[ -f "$APP_ROOT/repo.env" ]] && source "$APP_ROOT/repo.env"
-REPO="${ARC100_REPO:-BlessingQ/ARC-100-HMI}"
+REPO="${ARC100_REPO:-BlessingQ/ARC-100-HMI-Public}"
 API="https://api.github.com/repos/$REPO/releases"
 
 TAG=""; ACTIVATE=0; BETA=0; LOCAL=""
