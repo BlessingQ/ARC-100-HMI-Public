@@ -11,7 +11,7 @@
 | 보드 | Raspberry Pi 5 (4 GB 이상 권장) |
 | OS | Raspberry Pi OS **64-bit, Desktop** (Bookworm 이상). Lite 불가 — 화면이 필요합니다 |
 | 화면 | 10.1" 1920×1080 정전식 터치 (HDMI + USB 터치) |
-| 통신 | 절연형 USB-RS485 3채널 (ch1 센서/HM-100 #1, ch2 IOC-100 ×2, ch3 인버터 ×3 + HM-100 #2) + USB-RS232 1채널 (ch4 외부 기상대 WatchDog 3250DR, 옵션 — 자발 송신 장치라 단독 회선) |
+| 통신 | 절연형 USB-RS485 3채널 (ch1 센서/HM-100 #1, ch2 IOC-100 ×1, ch3 인버터 ×3 + HM-100 #2) + USB-RS232 1채널 (ch4 외부 기상대 WatchDog 3250DR, 옵션 — 자발 송신 장치라 단독 회선) |
 | 네트워크 | 설치·업데이트 시에만 인터넷 필요. 운전 중에는 불필요 |
 
 ## 2. 설치 (한 줄)
@@ -66,7 +66,7 @@ ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-invert
 | 장치명 | 채널 | 연결 장치 |
 |---|---|---|
 | `/dev/rs485-modbus` | ch1 | 아이온텍 SensorNode ×13 (ID 2~14) + HM-100 #1 (ID 1) |
-| `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1), IOC-100 #2 (ID 2) |
+| `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1) |
 | `/dev/rs485-inverter` | ch3 | LSLV-G100 인버터 국번 21 / 22 / 23 **+ HM-100 #2 (ID 1)** — 9600 8N1 공유. HM-100 은 ID 1 에만 응답하고 그 외 ID 프레임에는 침묵하므로 충돌 없음 |
 | `/dev/rs232-weather` | ch4 | 외부 기상대 스펙트럼 WatchDog 3250DR (AUX RS-232 9600) — 없으면 복도 센서로 대체 |
 
