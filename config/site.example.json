@@ -6,7 +6,6 @@
     "modbus":   { "port": "/dev/rs485-modbus",   "baud": 9600 },
     "ioc":      { "port": "/dev/rs485-ioc",      "baud": 9600 },
     "inverter": { "port": "/dev/rs485-inverter", "baud": 9600 },
-    "hm100b":   { "port": "/dev/rs485-hm100b",   "baud": 9600 },
     "weather":  { "port": "/dev/rs232-weather",  "baud": 9600 }
   },
   "inverters": [
@@ -49,7 +48,7 @@
   ],
   "hm100": [
     { "bus": "modbus", "label": "강산성" },
-    { "bus": "hm100b", "label": "약산성" }
+    { "bus": "inverter", "label": "약산성" }
   ],
   "control": {
     "tset_c": 24.0, "temp_tolerance_c": 1.0, "rh_low": 50, "rh_high": 70,
