@@ -64,5 +64,5 @@
                 "fields": { "temp": 1, "rh": 2, "wind_ms": 3, "wind_dir": 4, "solar_wm2": 5, "rain_mm": 6 } }
   },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
-  "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "check_interval_h": 6 }
+  "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 }
 }
