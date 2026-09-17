@@ -19,7 +19,7 @@
 Raspberry Pi 5의 터미널에서:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BlessingQ/ARC-100-HMI/master/bootstrap.sh | bash
 ```
 
 이 명령이 하는 일:
