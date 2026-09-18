@@ -14,7 +14,7 @@
     { "tag": "INV3", "slave": 23, "role": "room",    "kw_code": 7, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": 70400 }
   ],
   "ioc": [
-    { "id": 1, "gwid": 0 }
+    { "id": 1, "gwid": 1 }
   ],
   "outputs": {
     "DMP_EXHAUST_OPEN": [1, 1], "DMP_EXHAUST_CLOSE": [1, 2],
