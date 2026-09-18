@@ -139,7 +139,7 @@ Release 태그는 `vX.Y.Z`. 자산 이름 패턴 `arc100-hmi-linux-arm64-*.tar.g
 | 포트 열기 실패 (Permission denied) | 사용자가 `dialout` 그룹인지 (`groups`). 설치 후 **재로그인/재부팅** 필요 |
 | `/dev/rs485-*`가 없음 | 3장의 udev 규칙. `arc100-list-serial`로 값 재확인 |
 | HM-100 무응답 | 출고 보레이트가 19200인 개체가 있습니다. `site.json`의 `baud`를 19200으로 바꿔 시험 |
-| IOC-100 무응답 | IOC 는 ID·GWID·체크섬이 하나라도 다르면 **침묵**합니다. 장치 방번호 **1-1** = GWID 1 · ID 1 → `site.json` `ioc[]` 는 `{ "id": 1, "gwid": 1 }` (IOC #2 는 1-2 → `id: 2, gwid: 1`). 예전 `gwid: 0` 은 앱이 자동으로 1 로 고쳐 저장 (프로토콜 V2.0: 상태 150 B, 설정 31 B) |
+| IOC-100 무응답 | IOC 는 ID·GWID·체크섬이 하나라도 다르면 **침묵**합니다. 장치 방번호 **1-1** = GWID 1 · ID 1 → `site.json` `ioc[]` 는 `{ "id": 1, "gwid": 1 }`. 예전 `gwid: 0` 은 앱이 자동으로 1 로 고쳐 저장 (프로토콜 V2.0: 상태 150 B, 설정 31 B) |
 | 인버터 지령이 반영되지 않음 | 인버터 `drv=3`, `Frq=6`(Int 485), `CM.01` 국번 21/22/23, `CM.03=3`(9600), `CM.04=0`(8N1) |
 | 터치가 안 됨 / 전체화면이 안 됨 | Wayland(labwc) 문제일 수 있음. `sudo raspi-config` → Advanced Options → Wayland → **X11** 로 전환 후 재부팅 |
 
