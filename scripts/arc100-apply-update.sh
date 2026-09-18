@@ -20,6 +20,7 @@ fi
 # 원자적 링크 교체
 ln -sfn "$NEW" "$APP_ROOT/current.tmp"
 mv -Tf "$APP_ROOT/current.tmp" "$APP_ROOT/current"
+sync   # 전원 급차단 대비 — 링크 교체를 SD 카드에 확정
 rm -f "$APP_ROOT/health/boot_ok" "$APP_ROOT/health/fail_count"
 log "current -> $VER"
 

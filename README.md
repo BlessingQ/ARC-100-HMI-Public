@@ -96,6 +96,7 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | `arc100-fetch-release --activate` | 최신 릴리스 내려받아 적용 (앱 화면의 **업데이트 확인/적용** 버튼과 동일) |
 | `arc100-fetch-release --tag v1.2.0 --activate` | 특정 버전 적용 |
 | `arc100-rollback` | 직전 버전으로 되돌리기 |
+| `sudo arc100-guard` | 자동 시작 유닛 점검·복구 (부팅마다 `arc100-guard.service` 가 자동 실행) |
 | `sudo ~/ARC-100-HMI-Public/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
 
 ## 6. 업데이트 동작
@@ -132,6 +133,7 @@ Release 태그는 `vX.Y.Z`. 자산 이름 패턴 `arc100-hmi-linux-arm64-*.tar.g
 | 증상 | 확인 |
 |---|---|
 | 부팅 후 화면이 바탕화면만 보임 | `arc100-status` → `current` 링크가 있는지, `journalctl --user -u arc100-hmi -n 50` |
+| `arc100-status` 에 서비스가 **masked** / 유닛 파일 0바이트 | 전원 급차단 뒤 SD 카드에 유닛 파일이 비어 남은 경우. `sudo arc100-guard` 로 복구(재부팅 시 자동). 앱 업데이트는 이 파일을 건드리지 않음 |
 | 앱이 켜졌다 꺼졌다 반복 | 헬스체크가 3회 실패 후 롤백합니다. 로그로 원인 확인 후 `arc100-fetch-release --activate` 재시도 |
 | 포트 열기 실패 (Permission denied) | 사용자가 `dialout` 그룹인지 (`groups`). 설치 후 **재로그인/재부팅** 필요 |
 | `/dev/rs485-*`가 없음 | 3장의 udev 규칙. `arc100-list-serial`로 값 재확인 |

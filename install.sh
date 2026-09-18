@@ -10,6 +10,7 @@
 #   6. 키오스크: 데스크톱 자동 로그인, 화면 꺼짐 방지
 #   7. systemd 사용자 서비스 등록 -> 부팅 시 앱 자동 시작, 죽으면 자동 재시작
 #   8. 헬스체크 타이머 등록 -> 업데이트 후 기동 실패 3회 시 자동 롤백
+#   8-1. 자동 시작 보호 (root arc100-guard.service) -> 전원 급차단으로 유닛 파일이 비어도 부팅 때 복구
 #   9. 시각 도우미 /usr/local/sbin/arc100-timesync + sudoers (앱에서 NTP/RTC 전환·수동 시각 설정)
 #
 # 사용법:
@@ -77,12 +78,15 @@ install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-healthche
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-run.sh"            "$APP_ROOT/bin/arc100-run"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-list-serial.sh"    "$APP_ROOT/bin/arc100-list-serial"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-status.sh"         "$APP_ROOT/bin/arc100-status"
+install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-guard.sh" "$APP_ROOT/bin/arc100-guard"
+ln -sfn "$APP_ROOT/bin/arc100-guard" /usr/local/sbin/arc100-guard
 ln -sfn "$APP_ROOT/bin/arc100-status"        /usr/local/bin/arc100-status
 ln -sfn "$APP_ROOT/bin/arc100-fetch-release" /usr/local/bin/arc100-fetch-release
 ln -sfn "$APP_ROOT/bin/arc100-apply-update"  /usr/local/bin/arc100-apply-update
 ln -sfn "$APP_ROOT/bin/arc100-rollback"      /usr/local/bin/arc100-rollback
 ln -sfn "$APP_ROOT/bin/arc100-list-serial"   /usr/local/bin/arc100-list-serial
 printf 'ARC100_REPO=%s\n' "$REPO" > "$APP_ROOT/repo.env"
+printf 'APP_USER=%s\nAPP_UID=%s\nAPP_HOME=%s\n' "$APP_USER" "$APP_UID" "$APP_HOME" > "$APP_ROOT/app.env"
 
 # 시각 소스(NTP ↔ RTC/수동) 도우미 — root 소유·root 전용 경로에 두고, 앱 사용자에게 이 명령만 sudo 허용
 install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-timesync.sh" /usr/local/sbin/arc100-timesync
@@ -130,9 +134,14 @@ fi
 log "systemd 사용자 서비스 등록: arc100-hmi.service"
 USER_UNIT_DIR="$APP_HOME/.config/systemd/user"
 install -d -o "$APP_USER" -g "$APP_USER" "$APP_HOME/.config" "$APP_HOME/.config/systemd" "$USER_UNIT_DIR"
-install -m 0644 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/config/arc100-hmi.service"         "$USER_UNIT_DIR/arc100-hmi.service"
-install -m 0644 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/config/arc100-healthcheck.service" "$USER_UNIT_DIR/arc100-healthcheck.service"
-install -m 0644 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/config/arc100-healthcheck.timer"   "$USER_UNIT_DIR/arc100-healthcheck.timer"
+# 원본 보관본(/opt/arc100/units) — arc100-guard 가 부팅마다 이것과 비교해 복구한다
+install -d -o root -g root "$APP_ROOT/units"
+for u in arc100-hmi.service arc100-healthcheck.service arc100-healthcheck.timer; do
+  [[ -s "$SRC_DIR/config/$u" ]] || die "유닛 파일이 비어 있습니다: $SRC_DIR/config/$u (git pull 로 다시 받으세요)"
+  install -m 0644 -o root -g root "$SRC_DIR/config/$u" "$APP_ROOT/units/$u"
+  rm -f "$USER_UNIT_DIR/$u"   # /dev/null 링크(mask) 가 남아 있으면 지우고 새로 놓는다
+  install -m 0644 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/config/$u" "$USER_UNIT_DIR/$u"
+done
 loginctl enable-linger "$APP_USER" || true
 
 run_user_systemctl() {
@@ -140,6 +149,7 @@ run_user_systemctl() {
 }
 if [[ -d "/run/user/$APP_UID" ]]; then
   run_user_systemctl daemon-reload
+  run_user_systemctl unmask arc100-hmi.service arc100-healthcheck.timer 2>/dev/null || true
   run_user_systemctl enable arc100-hmi.service arc100-healthcheck.timer
   if [[ -e "$APP_ROOT/current/arc100_hmi" ]]; then
     run_user_systemctl restart arc100-hmi.service || warn "서비스 시작 실패 — 'arc100-status' 로 확인"
@@ -154,6 +164,22 @@ else
   chown -h "$APP_USER":"$APP_USER" "$USER_UNIT_DIR/default.target.wants/arc100-hmi.service" "$USER_UNIT_DIR/timers.target.wants/arc100-healthcheck.timer"
 fi
 
+# ── 8-1. 자동 시작 보호 (root) ──────────────────────────────────────────────
+log "자동 시작 보호 등록: arc100-guard.service (부팅마다 유닛 파일 점검·복구)"
+install -m 0644 -o root -g root "$SRC_DIR/config/arc100-guard.service" /etc/systemd/system/arc100-guard.service
+systemctl daemon-reload
+systemctl enable arc100-guard.service >/dev/null 2>&1 || warn "arc100-guard 활성화 실패"
+"$APP_ROOT/bin/arc100-guard" || true
+
+# 전원 급차단 대비: 지금까지 쓴 파일을 SD 카드에 확정
+sync
+
+# 결과 검증 — 자동 시작이 실제로 잡혔는지
+if [[ -d "/run/user/$APP_UID" ]]; then
+  st="$(run_user_systemctl is-enabled arc100-hmi.service 2>&1 || true)"
+  [[ "$st" == "enabled" ]] || warn "arc100-hmi.service 상태가 '$st' 입니다 — 'arc100-status' 로 확인하세요"
+fi
+
 # ── 완료 ─────────────────────────────────────────────────────────────────────
 echo
 log "설치 완료."
@@ -163,5 +189,6 @@ echo "  로그         : journalctl --user -u arc100-hmi -f   (사용자 $APP_US
 echo "  상태         : arc100-status"
 echo "  시리얼 확인  : arc100-list-serial   ->  /etc/udev/rules.d/99-arc100-rs485.rules 수정"
 echo "  업데이트     : arc100-fetch-release --activate   /  롤백: arc100-rollback"
+echo "  자동시작 복구: sudo arc100-guard   (부팅마다 자동 실행됨)"
 echo
 echo "  재부팅하면 자동 로그인 후 앱이 전체화면으로 시작됩니다:  sudo reboot"

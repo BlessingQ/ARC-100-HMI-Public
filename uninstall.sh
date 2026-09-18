@@ -12,6 +12,8 @@ U="$APP_HOME/.config/systemd/user"
 sudo -u "$APP_USER" XDG_RUNTIME_DIR="/run/user/$APP_UID" systemctl --user disable --now arc100-hmi.service arc100-healthcheck.timer 2>/dev/null || true
 rm -f "$U/arc100-hmi.service" "$U/arc100-healthcheck.service" "$U/arc100-healthcheck.timer" \
       "$U/default.target.wants/arc100-hmi.service" "$U/timers.target.wants/arc100-healthcheck.timer"
+systemctl disable --now arc100-guard.service 2>/dev/null || true
+rm -f /etc/systemd/system/arc100-guard.service /usr/local/sbin/arc100-guard
 rm -f /usr/local/bin/arc100-status /usr/local/bin/arc100-fetch-release /usr/local/bin/arc100-apply-update \
       /usr/local/bin/arc100-rollback /usr/local/bin/arc100-list-serial
 rm -rf /opt/arc100

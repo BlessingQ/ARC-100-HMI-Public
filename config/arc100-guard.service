@@ -1,0 +1,16 @@
+# /etc/systemd/system/arc100-guard.service (root)
+# 부팅마다 사용자 세션이 열리기 전에 앱 자동 시작 유닛(~/.config/systemd/user/arc100-*)이 비었거나
+# mask 되었으면 원본(/opt/arc100/units)으로 복구한다. 전원 급차단 뒤 0바이트 파일 대비.
+[Unit]
+Description=ARC-100 HMI autostart guard (repair user units before login)
+After=local-fs.target
+Before=systemd-user-sessions.service display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/arc100/bin/arc100-guard
+StandardOutput=journal
+SyslogIdentifier=arc100-guard
+
+[Install]
+WantedBy=multi-user.target
