@@ -54,14 +54,18 @@ sudo ./install.sh --user $USER
 
 ## 3. 설치 후 반드시 할 일 — RS-485 포트 고정
 
-`/dev/ttyUSB0~3` 번호는 재부팅 시 바뀔 수 있어 반드시 고정 이름을 씁니다.
+`/dev/ttyUSB0~3` 번호는 **재부팅 때마다 바뀔 수 있습니다** (USB 열거 순서). site.json 에 ttyUSBn 을 그대로 두면 재부팅 뒤 회선이 뒤바뀌어 "TX 는 나가는데 RX 가 없는" 증상이 됩니다. 반드시 고정 이름으로 바꿉니다 — 한 줄이면 됩니다:
 
 ```bash
-arc100-list-serial                       # 컨버터의 serial / 인터페이스 번호 / ID_PATH 확인
-sudo nano /etc/udev/rules.d/99-arc100-rs485.rules   # <SERIAL> 등 자리표시자를 채우고 # 제거
-sudo udevadm control --reload-rules && sudo udevadm trigger
-ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-inverter + rs232-weather
+# 1) 앱 화면 설정 → 통신 포트 에서 회선마다 지금 맞는 ttyUSBn 을 배정·저장 (통신 모니터로 응답 확인)
+# 2) 그 배정을 그대로 고정:
+sudo arc100-fix-ports                    # 어댑터 serial(또는 USB 구멍 위치)로 udev 규칙 생성 + site.json 을 /dev/rs485-* 로 갱신
+ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-inverter (+ rs232-weather)
 ```
+
+- FTDI 처럼 칩 고유 serial 이 있는 어댑터는 **USB 구멍을 바꿔 꽂아도** 유지됩니다.
+- CH340 같은 serial 없는 어댑터는 **USB 물리 포트 위치**로 고정되므로 꽂는 자리를 바꾸면 다시 `sudo arc100-fix-ports` 를 실행합니다.
+- 미리 보기만: `sudo arc100-fix-ports --dry-run`. 수동으로 하려면 `arc100-list-serial` 로 값을 보고 `/etc/udev/rules.d/99-arc100-rs485.rules` 를 편집.
 
 | 장치명 | 채널 | 연결 장치 |
 |---|---|---|
@@ -91,6 +95,7 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | 명령 | 설명 |
 |---|---|
 | `arc100-status` | 버전·서비스·포트·헬스 상태 요약 |
+| `sudo arc100-fix-ports` | 현재 회선→포트 배정을 udev 고정 이름(`/dev/rs485-*`)으로 굳히고 site.json 갱신 (재부팅 시 ttyUSB 번호 변경 대비) |
 | 화면 **설정·시스템 → 통신 모니터** | 회선별 TX/RX 프레임(HEX)과 드라이버 해석을 실시간으로 봄 — 무응답·ID 불일치·길이 오류를 현장에서 바로 판별 |
 | `journalctl --user -u arc100-hmi -f` | 앱 로그 실시간 보기 |
 | `systemctl --user restart arc100-hmi` | 앱 재시작 |

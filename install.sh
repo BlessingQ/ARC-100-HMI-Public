@@ -78,6 +78,8 @@ install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-healthche
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-run.sh"            "$APP_ROOT/bin/arc100-run"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-list-serial.sh"    "$APP_ROOT/bin/arc100-list-serial"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-status.sh"         "$APP_ROOT/bin/arc100-status"
+install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-fix-ports.sh" "$APP_ROOT/bin/arc100-fix-ports"
+ln -sfn "$APP_ROOT/bin/arc100-fix-ports" /usr/local/sbin/arc100-fix-ports
 install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-guard.sh" "$APP_ROOT/bin/arc100-guard"
 ln -sfn "$APP_ROOT/bin/arc100-guard" /usr/local/sbin/arc100-guard
 ln -sfn "$APP_ROOT/bin/arc100-status"        /usr/local/bin/arc100-status
@@ -187,7 +189,8 @@ echo "  앱 경로      : $APP_ROOT/current  ->  $(readlink -f "$APP_ROOT/curren
 echo "  설정         : $CONF_DIR/site.json"
 echo "  로그         : journalctl --user -u arc100-hmi -f   (사용자 $APP_USER 로 실행)"
 echo "  상태         : arc100-status"
-echo "  시리얼 확인  : arc100-list-serial   ->  /etc/udev/rules.d/99-arc100-rs485.rules 수정"
+echo "  포트 고정    : 앱 설정→통신 포트에서 ttyUSBn 배정 후  sudo arc100-fix-ports   (재부팅해도 안 바뀌게)"
+echo "  시리얼 확인  : arc100-list-serial"
 echo "  업데이트     : arc100-fetch-release --activate   /  롤백: arc100-rollback"
 echo "  자동시작 복구: sudo arc100-guard   (부팅마다 자동 실행됨)"
 echo
