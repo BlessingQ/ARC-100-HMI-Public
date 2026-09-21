@@ -57,7 +57,7 @@
     "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13",
     "gas_aggregate": "max", "tout_source": "corridor",
     "limit_hz_by_qmax": true, "supply_offset_pct": 0, "gas_release_ratio": 0.9,
-    "manual_timeout_h": 2
+    "manual_timeout_h": 2, "nh3_source": "dol"
   },
   "weather": {
     "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
