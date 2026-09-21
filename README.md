@@ -142,6 +142,7 @@ Release 태그는 `vX.Y.Z`. 자산 이름 패턴 `arc100-hmi-linux-arm64-*.tar.g
 |---|---|
 | 부팅 후 화면이 바탕화면만 보임 | `arc100-status` → `current` 링크가 있는지, `journalctl --user -u arc100-hmi -n 50` |
 | `arc100-status` 에 서비스가 **masked** / 유닛 파일 0바이트 | 전원 급차단 뒤 SD 카드에 유닛 파일이 비어 남은 경우. `sudo arc100-guard` 로 복구(재부팅 시 자동). 앱 업데이트는 이 파일을 건드리지 않음 |
+| 앱 화면이 멈춘 뒤 저절로 재시작됨 | 정상 동작 — 앱 하트비트(60 s)가 5 분 넘게 멈추면 헬스체크가 재시작합니다 (`/opt/arc100/health/hang_restarts.log`, `arc100-status` 에 횟수 표시) |
 | 앱이 켜졌다 꺼졌다 반복 | 헬스체크가 3회 실패 후 롤백합니다. 로그로 원인 확인 후 `arc100-fetch-release --activate` 재시도 |
 | 포트 열기 실패 (Permission denied) | 사용자가 `dialout` 그룹인지 (`groups`). 설치 후 **재로그인/재부팅** 필요 |
 | `/dev/rs485-*`가 없음 | 3장의 udev 규칙. `arc100-list-serial`로 값 재확인 |
@@ -160,7 +161,7 @@ scripts/
   arc100-fetch-release.sh   Releases 다운로드·sha256 검증·설치
   arc100-apply-update.sh    current 링크 교체·재시작·헬스 대기·실패 시 롤백
   arc100-rollback.sh        직전 버전 복귀
-  arc100-healthcheck.sh     2분 타이머, crash-loop 시 자동 롤백
+  arc100-healthcheck.sh     2분 타이머, crash-loop 시 자동 롤백 · 하트비트 5분 정지 시 재시작
   arc100-run.sh             디스플레이 준비 대기 후 앱 실행 (systemd ExecStart)
   arc100-list-serial.sh     USB-RS485 식별 정보 출력
   arc100-status.sh          상태 요약

@@ -31,6 +31,7 @@ else
 fi
 case "$unit_desc" in 정상*) ;; *) echo "→ 복구: sudo arc100-guard   (또는 cd ~/ARC-100-HMI-Public && git pull && sudo ./install.sh)";; esac
 echo "보호 서비스 : $(systemctl is-enabled arc100-guard.service 2>&1 | head -n 1)"
+[[ -f "$APP_ROOT/health/hang_restarts.log" ]] && echo "하트비트 재시작: $(wc -l < "$APP_ROOT/health/hang_restarts.log")회 (마지막 $(tail -n 1 "$APP_ROOT/health/hang_restarts.log"))"
 echo
 echo "--- RS-485 포트 ---"
 ls -l /dev/rs485-* 2>/dev/null || echo "(/dev/rs485-* 없음 — arc100-list-serial 로 규칙 작성)"

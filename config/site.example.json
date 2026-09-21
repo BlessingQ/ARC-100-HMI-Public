@@ -9,9 +9,9 @@
     "weather":  { "port": "/dev/rs232-weather",  "baud": 9600 }
   },
   "inverters": [
-    { "tag": "INV1", "slave": 21, "role": "supply",  "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null },
-    { "tag": "INV2", "slave": 22, "role": "exhaust", "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null },
-    { "tag": "INV3", "slave": 23, "role": "room",    "kw_code": 7, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": 70400 }
+    { "tag": "INV1", "slave": 21, "role": "supply",  "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null, "no_load_a": null },
+    { "tag": "INV2", "slave": 22, "role": "exhaust", "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null, "no_load_a": null },
+    { "tag": "INV3", "slave": 23, "role": "room",    "kw_code": 7, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": 70400, "no_load_a": null }
   ],
   "ioc": [
     { "id": 1, "gwid": 1 }
@@ -56,13 +56,15 @@
     "period_s": 60, "vent_semantics": "TOTAL_SUPPLY",
     "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13",
     "gas_aggregate": "max", "tout_source": "corridor",
-    "limit_hz_by_qmax": true, "supply_offset_pct": 0, "gas_release_ratio": 0.9
+    "limit_hz_by_qmax": true, "supply_offset_pct": 0, "gas_release_ratio": 0.9,
+    "manual_timeout_h": 2
   },
   "weather": {
     "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
     "format": { "separator": ",", "prefix": "", "temp_unit": "C", "query": "",
                 "fields": { "temp": 1, "rh": 2, "wind_ms": 3, "wind_dir": 4, "solar_wm2": 5, "rain_mm": 6 } }
   },
+  "display": { "dim_after_min": 10 },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
   "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 }
 }
