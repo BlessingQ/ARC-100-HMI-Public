@@ -1,5 +1,5 @@
 # ARC-100 시리얼 고정 이름: ch1 /dev/rs485-modbus, ch2 rs485-ioc, ch3 rs485-inverter (RS-485) + ch4 /dev/rs232-weather (기상대 RS-232, 단독)
-# ch3 인버터 회선에 HM-100 #2(ID 1)를 같이 물린다 (인버터 국번 21·22·23 과 충돌 없음).
+# ch3 인버터 회선에 HM-100 두 대(ID 1·2)를 같이 물린다 (인버터 국번 21·22·23 과 충돌 없음). ch1 은 SensorNode 만.
 # 기상대(WatchDog 3250DR)는 주기적으로 스스로 송신하는 마스터형 장치라 다른 장치와 회선을 공유할 수 없다 → RS-232 단독.
 #
 # arc100-list-serial 로 실제 컨버터의 serial / 인터페이스 번호 / ID_PATH 를 확인한 뒤
