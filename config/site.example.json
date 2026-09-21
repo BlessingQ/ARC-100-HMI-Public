@@ -31,19 +31,22 @@
     { "tag": "DMP_RECIRC",  "power": "DMP_RECIRC_PWR",  "dir": "DMP_RECIRC_DIR",  "open_fb": "DMP_RECIRC_OPEN_FB",  "stroke_s": 60, "deadtime_ms": 500 }
   ],
   "sensor_nodes": [
-    { "index": 1,  "slave": 1 ,  "zone": "R101", "has_nh3": true,  "dol_ain": 1 },
+    { "index": 1,  "slave": 1 ,  "zone": "R101", "has_nh3": true },
     { "index": 2,  "slave": 2 ,  "zone": "R101", "has_nh3": false },
     { "index": 3,  "slave": 3 ,  "zone": "R101", "has_nh3": false },
-    { "index": 4,  "slave": 4 ,  "zone": "R102", "has_nh3": true,  "dol_ain": 2 },
+    { "index": 4,  "slave": 4 ,  "zone": "R102", "has_nh3": true },
     { "index": 5,  "slave": 5 ,  "zone": "R102", "has_nh3": false },
     { "index": 6,  "slave": 6 ,  "zone": "R102", "has_nh3": false },
-    { "index": 7,  "slave": 7 ,  "zone": "R103", "has_nh3": true,  "dol_ain": 3 },
+    { "index": 7,  "slave": 7 ,  "zone": "R103", "has_nh3": true },
     { "index": 8,  "slave": 8 ,  "zone": "R103", "has_nh3": false },
     { "index": 9,  "slave": 9 , "zone": "R103", "has_nh3": false },
-    { "index": 10, "slave": 10, "zone": "R104", "has_nh3": true,  "dol_ain": 4 },
+    { "index": 10, "slave": 10, "zone": "R104", "has_nh3": true },
     { "index": 11, "slave": 11, "zone": "R104", "has_nh3": false },
     { "index": 12, "slave": 12, "zone": "R104", "has_nh3": false },
     { "index": 13, "slave": 13, "zone": "CORRIDOR", "has_nh3": false }
+  ],
+  "dol53": [
+    { "ch": 1, "zone": "R101" }, { "ch": 2, "zone": "R102" }, { "ch": 3, "zone": "R103" }, { "ch": 4, "zone": "R104" }
   ],
   "hm100": [
     { "bus": "inverter", "slave": 1, "label": "강산성", "ph_min": null, "ph_max": null },
