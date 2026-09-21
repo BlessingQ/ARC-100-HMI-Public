@@ -17,17 +17,18 @@
     { "id": 1, "gwid": 1 }
   ],
   "outputs": {
-    "DMP_EXHAUST_OPEN": [1, 1], "DMP_EXHAUST_CLOSE": [1, 2],
-    "DMP_RECIRC_OPEN":  [1, 3], "DMP_RECIRC_CLOSE":  [1, 4],
+    "DMP_EXHAUST_PWR": [1, 1], "DMP_EXHAUST_DIR": [1, 2],
+    "DMP_RECIRC_PWR":  [1, 3], "DMP_RECIRC_DIR":  [1, 4],
     "PUMP_CIRC_1": [1, 5], "PUMP_CIRC_2": [1, 6], "PUMP_CIRC_3": [1, 7],
     "PUMP_DRAIN": [1, 8], "PUMP_BOOST": [1, 9], "ALARM_COMMON": [1, 10]
   },
   "inputs": {
-    "E_STOP": [1, 1], "LEVEL_ACID_STRONG": [1, 2], "LEVEL_ACID_WEAK": [1, 3], "ROOM_FAN_EOCR_TRIP": [1, 4]
+    "E_STOP": [1, 1], "LEVEL_ACID_STRONG": [1, 2], "LEVEL_ACID_WEAK": [1, 3], "ROOM_FAN_EOCR_TRIP": [1, 4],
+    "DMP_EXHAUST_OPEN_FB": [1, 5], "DMP_RECIRC_OPEN_FB": [1, 6]
   },
   "dampers": [
-    { "tag": "DMP_EXHAUST", "open": "DMP_EXHAUST_OPEN", "close": "DMP_EXHAUST_CLOSE", "stroke_s": 60, "deadtime_ms": 500 },
-    { "tag": "DMP_RECIRC",  "open": "DMP_RECIRC_OPEN",  "close": "DMP_RECIRC_CLOSE",  "stroke_s": 60, "deadtime_ms": 500 }
+    { "tag": "DMP_EXHAUST", "power": "DMP_EXHAUST_PWR", "dir": "DMP_EXHAUST_DIR", "open_fb": "DMP_EXHAUST_OPEN_FB", "stroke_s": 60, "deadtime_ms": 500 },
+    { "tag": "DMP_RECIRC",  "power": "DMP_RECIRC_PWR",  "dir": "DMP_RECIRC_DIR",  "open_fb": "DMP_RECIRC_OPEN_FB",  "stroke_s": 60, "deadtime_ms": 500 }
   ],
   "sensor_nodes": [
     { "index": 1,  "slave": 2,  "zone": "R101", "has_nh3": true,  "dol_ain": 1 },
