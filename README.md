@@ -69,7 +69,7 @@ ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-invert
 
 | 장치명 | 채널 | 연결 장치 |
 |---|---|---|
-| `/dev/rs485-modbus` | ch1 | 아이온텍 SensorNode ×13 (ID 2~14) |
+| `/dev/rs485-modbus` | ch1 | 아이온텍 SensorNode ×13 (ID 1~13) |
 | `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1) |
 | `/dev/rs485-inverter` | ch3 | **HM-100 #1 (ID 1) · HM-100 #2 (ID 2)** + LSLV-G100 인버터 국번 21 / 22 / 23 — 9600 8N1 공유, 앱이 1 → 2 → 21 → 22 → 23 순으로 순회 (`site.json` `hm100[].slave`) |
 | `/dev/rs232-weather` | ch4 | 외부 기상대 스펙트럼 WatchDog 3250DR (AUX RS-232 9600) — 없으면 복도 센서로 대체 |
