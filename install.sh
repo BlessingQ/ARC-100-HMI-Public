@@ -78,11 +78,13 @@ install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-healthche
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-run.sh"            "$APP_ROOT/bin/arc100-run"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-list-serial.sh"    "$APP_ROOT/bin/arc100-list-serial"
 install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-status.sh"         "$APP_ROOT/bin/arc100-status"
+install -m 0755 -o "$APP_USER" -g "$APP_USER" "$SRC_DIR/scripts/arc100-serial-capture.sh" "$APP_ROOT/bin/arc100-serial-capture"
 install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-fix-ports.sh" "$APP_ROOT/bin/arc100-fix-ports"
 ln -sfn "$APP_ROOT/bin/arc100-fix-ports" /usr/local/sbin/arc100-fix-ports
 install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-guard.sh" "$APP_ROOT/bin/arc100-guard"
 ln -sfn "$APP_ROOT/bin/arc100-guard" /usr/local/sbin/arc100-guard
 ln -sfn "$APP_ROOT/bin/arc100-status"        /usr/local/bin/arc100-status
+ln -sfn "$APP_ROOT/bin/arc100-serial-capture" /usr/local/bin/arc100-serial-capture
 ln -sfn "$APP_ROOT/bin/arc100-fetch-release" /usr/local/bin/arc100-fetch-release
 ln -sfn "$APP_ROOT/bin/arc100-apply-update"  /usr/local/bin/arc100-apply-update
 ln -sfn "$APP_ROOT/bin/arc100-rollback"      /usr/local/bin/arc100-rollback
