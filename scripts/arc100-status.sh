@@ -33,8 +33,20 @@ case "$unit_desc" in 정상*) ;; *) echo "→ 복구: sudo arc100-guard   (또�
 echo "보호 서비스 : $(systemctl is-enabled arc100-guard.service 2>&1 | head -n 1)"
 [[ -f "$APP_ROOT/health/hang_restarts.log" ]] && echo "하트비트 재시작: $(wc -l < "$APP_ROOT/health/hang_restarts.log")회 (마지막 $(tail -n 1 "$APP_ROOT/health/hang_restarts.log"))"
 echo
-echo "--- RS-485 포트 ---"
-ls -l /dev/rs485-* 2>/dev/null || echo "(/dev/rs485-* 없음 — arc100-list-serial 로 규칙 작성)"
+echo "--- 회선 포트 (site.json → 지금 실제 장치) ---"
+# ttyUSB 번호는 재부팅마다 바뀐다 → 앱 v0.1.36+ 는 /dev/serial/by-id(칩 시리얼) 고유 경로를 저장한다.
+if command -v jq >/dev/null && [[ -f /etc/arc100/site.json ]]; then
+  while IFS=$'\t' read -r bus port; do
+    real="$(readlink -f "$port" 2>/dev/null)"
+    if [[ "$port" == sim://* ]]; then note="시뮬"
+    elif [[ ! -e "$port" ]]; then note="없음 ✗"
+    elif [[ "$port" =~ ^/dev/tty(USB|ACM)[0-9]+$ ]]; then note="번호 경로 ⚠ 재부팅 시 바뀔 수 있음 (앱 재시작 시 고유 경로로 자동 고정)"
+    else note="→ $real"; fi
+    printf '  %-9s %s  %s\n' "$bus" "$port" "$note"
+  done < <(jq -r '.buses | to_entries[] | "\(.key)\t\(.value.port)"' /etc/arc100/site.json)
+fi
+ls -l /dev/rs485-* /dev/rs232-* 2>/dev/null
+echo "  고유 경로: $(ls /dev/serial/by-id 2>/dev/null | tr '\n' ' ')"
 echo
 echo "--- 디스플레이 ---"
 echo "WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-} DISPLAY=${DISPLAY:-} XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-}"
