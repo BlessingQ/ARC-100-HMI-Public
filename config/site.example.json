@@ -64,8 +64,7 @@
   },
   "weather": {
     "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
-    "format": { "separator": ",", "prefix": "", "temp_unit": "C", "query": "",
-                "fields": { "temp": 1, "rh": 2, "wind_ms": 3, "wind_dir": 4, "solar_wm2": 5, "rain_mm": 6 } }
+    "format": { "protocol": "wd3000", "temp_unit": "F", "wind_unit": "mph", "rain_unit": "in" }
   },
   "display": { "dim_after_min": 10 },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
