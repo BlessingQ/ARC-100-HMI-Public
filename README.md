@@ -92,6 +92,8 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 - `admin_pin` — 관리자 PIN (기본 `1234`). 설정 저장·통신 포트 변경·트립 리셋·세척 모드·업데이트 방식(수동/자동) 변경에 필요. 업데이트 확인·다운로드·적용은 PIN 없이 확인 대화상자만
 - `buses.*.port` — 회선별 포트. 앱의 **설정 > 통신 포트** 화면에서 터치로 고를 수 있으며(발견된 `/dev/rs485-*`·`/dev/ttyUSB*` 목록), 저장하면 즉시 재연결됩니다
 
+- `web.*` — **원격 웹 (v0.1.38~)**: 앱이 `127.0.0.1:8080` 에서 HMI 와 같은 화면(보기 전용)과 웹 푸시 알람을 냅니다. 외부 접속은 Tailscale Funnel (아래 §5-1). `public_url` 을 비우면 `tailscale status` 의 기기 이름으로 자동, `healthcheck_url` 에 healthchecks.io 핑 주소를 넣으면 Pi 꺼짐을 메일로 받습니다
+
 업데이트를 해도 이 파일은 덮어쓰지 않습니다. 이벤트 로그 DB(`/var/lib/arc100/arc100.db`, 30일 보존)도 앱 폴더 밖에 있어 **업데이트·롤백 후에 그대로 보존**됩니다.
 
 ## 5. 운영 명령
@@ -111,6 +113,17 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | `arc100-rollback` | 직전 버전으로 되돌리기 |
 | `sudo arc100-guard` | 자동 시작 유닛 점검·복구 (부팅마다 `arc100-guard.service` 가 자동 실행) |
 | `sudo ~/ARC-100-HMI-Public/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
+
+### 5-1. 원격 웹 외부 공개 (Tailscale Funnel, 무료 · 포트포워딩 불필요)
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sudo sh
+sudo tailscale up --hostname=arc100 --operator=$USER   # 링크로 로그인 → 관리 콘솔에서 Disable key expiry
+tailscale funnel --bg 8080                             # 처음엔 Funnel 허용 링크가 뜸 → 승인
+tailscale funnel status                                # https://arc100.<tailnet>.ts.net (Funnel on)
+```
+
+브라우저로 그 주소를 열고, 앱 **설정 > 시스템 > 원격 웹** 줄의 6자리 설정 코드로 첫 관리자를 만듭니다 (코드는 `/var/lib/arc100/web_setup_code.txt` 에도 있음). 계정·세션은 `/var/lib/arc100/web_auth.json`, 푸시 키·구독은 `web_push.json` (둘 다 소유자만 읽기, 업데이트 후에도 유지).
 
 ## 6. 업데이트 동작
 
@@ -135,7 +148,8 @@ arc100-hmi-linux-arm64-v1.2.0.tar.gz
 └── bundle/              flutter build linux --release 의 bundle 폴더 그대로
     ├── arc100_hmi       실행 파일
     ├── lib/             libflutter_linux_gtk.so, libserialport.so 등
-    └── data/
+    ├── data/
+    └── web/             flutter build web -t lib/main_web.dart (원격 웹, v0.1.38~) — 한글 글꼴 부분집합, CanvasKit 은 CDN
 arc100-hmi-linux-arm64-v1.2.0.tar.gz.sha256   (sha256sum 출력 형식)
 ```
 
