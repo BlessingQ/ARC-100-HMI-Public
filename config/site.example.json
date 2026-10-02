@@ -69,5 +69,5 @@
   "display": { "dim_after_min": 10 },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
   "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 },
-  "web": { "enabled": true, "port": 8080, "bind": "127.0.0.1", "public_url": "", "healthcheck_url": "" }
+  "web": { "enabled": true, "port": 8080, "bind": "127.0.0.1", "public_url": "", "healthcheck_url": "", "remote_control": true }
 }

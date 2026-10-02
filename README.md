@@ -123,7 +123,7 @@ tailscale funnel --bg 8080                             # 처음엔 Funnel 허용
 tailscale funnel status                                # https://arc100.<tailnet>.ts.net (Funnel on)
 ```
 
-브라우저로 그 주소를 열고, 앱 **설정 > 시스템 > 원격 웹** 줄의 6자리 설정 코드로 첫 관리자를 만듭니다 (코드는 `/var/lib/arc100/web_setup_code.txt` 에도 있음). 계정·세션은 `/var/lib/arc100/web_auth.json`, 푸시 키·구독은 `web_push.json` (둘 다 소유자만 읽기, 업데이트 후에도 유지).
+브라우저로 그 주소를 열고, 앱 **설정 > 시스템 > 원격 웹** 줄의 6자리 설정 코드로 첫 관리자를 만듭니다. 다른 사용자는 웹에서 가입 신청 → 관리자가 보기·조작·관리자 역할로 승인(v0.1.40~). 같은 줄의 `원격 조작 허용/차단`(관리자 PIN, `web.remote_control`)으로 현장 우선 전환. 사람이 한 조작(현장 HMI·원격 웹)은 `arc100.db` 의 `audit` 표에 1 년 보존 (코드는 `/var/lib/arc100/web_setup_code.txt` 에도 있음). 계정·세션은 `/var/lib/arc100/web_auth.json`, 푸시 키·구독은 `web_push.json` (둘 다 소유자만 읽기, 업데이트 후에도 유지).
 
 ## 6. 업데이트 동작
 
