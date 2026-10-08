@@ -4,7 +4,8 @@
 #   1. 데스크톱을 X11(Openbox, rpd-x) 로 전환 — TeamViewer 는 Raspberry Pi 의 Wayland(labwc) 에서
 #      접속이 "연결 중" 에 멈추는 경우가 있어 TeamViewer 가 X11 을 권장한다. (재부팅 후 적용)
 #   2. 화상 키보드 onboard — X11 용. (squeekboard 는 Wayland 전용이라 X11 에서는 뜨지 않는다)
-#      화면 오른쪽 아래 작은 키보드 아이콘을 누르면 열리고, 글자 입력 칸을 누르면 자동으로도 뜬다.
+#      글자 입력 칸을 누르면 자동으로 뜨고, 작업 표시줄(바탕화면)의 키보드 아이콘으로도 연다.
+#      앱 화면 위에 떠 있는 아이콘(icon palette)은 거슬려서 끈다 (2026-10-08 사용자).
 #   3. TeamViewer Host (무인 접속용, 부팅하면 항상 대기) + 라이선스 동의 + 데몬 자동 시작.
 #      회사 계정에 붙이려면 --tv-token <할당 토큰> (TeamViewer 관리 콘솔 → 설계·배포 → 할당 구성).
 #      ※ TeamViewer 는 회사 용도면 유료 라이선스가 필요하다 (무료 = 개인용).
@@ -93,16 +94,17 @@ fi
 if [[ $DO_KEYBOARD -eq 1 ]]; then
   log "화상 키보드 onboard 설치"
   apt-get install -y -qq onboard at-spi2-core >/dev/null
-  # 기본값: 작게 시작 · 떠 있는 아이콘으로 열기 · 입력 칸을 누르면 자동 표시 · 화면 아래에 붙임
+  # 기본값: 숨긴 채 시작 · 떠 있는 아이콘 없음(작업 표시줄 아이콘으로 열기) · 입력 칸을 누르면 자동 표시 · 화면 아래에 붙임
   cat > /usr/share/glib-2.0/schemas/90_arc100-onboard.gschema.override <<'EOF'
 [org.onboard]
 start-minimized=true
+show-status-icon=true
 
 [org.onboard.auto-show]
 enabled=true
 
 [org.onboard.icon-palette]
-in-use=true
+in-use=false
 
 [org.onboard.window]
 docking-enabled=true
@@ -161,7 +163,7 @@ fi
 sync
 echo
 log "완료."
-[[ $DO_KEYBOARD -eq 1 ]] && echo "  화상 키보드 : 화면 구석의 키보드 아이콘을 누르거나, 글자 입력 칸을 누르면 뜹니다"
+[[ $DO_KEYBOARD -eq 1 ]] && echo "  화상 키보드 : 글자 입력 칸을 누르면 뜹니다 (작업 표시줄의 키보드 아이콘으로도 열기 — 앱 화면 위 아이콘은 없음)"
 [[ $DO_TEAMVIEWER -eq 1 ]] && echo "  TeamViewer  : ID 확인 'sudo teamviewer info' (ID 는 관리자만 읽을 수 있음) · 무인 접속 비밀번호 'sudo teamviewer passwd <비밀번호>' (또는 --tv-token 으로 회사 계정 할당)"
 [[ $NEED_REBOOT -eq 1 ]] && echo "  재부팅해야 X11 화면으로 바뀝니다:  sudo reboot"
 echo "  되돌리기    : sudo arc100-remote-setup --wayland   (Wayland + squeekboard)"
