@@ -12,12 +12,15 @@
 #   8. 헬스체크 타이머 등록 -> 업데이트 후 기동 실패 3회 시 자동 롤백
 #   8-1. 자동 시작 보호 (root arc100-guard.service) -> 전원 급차단으로 유닛 파일이 비어도 부팅 때 복구
 #   9. 시각 도우미 /usr/local/sbin/arc100-timesync + sudoers (앱에서 NTP/RTC 전환·수동 시각 설정)
+#  10. 원격 지원 · 화상 키보드 (arc100-remote-setup): 데스크톱 X11 전환 + onboard + TeamViewer Host
 #
 # 사용법:
 #   sudo ./install.sh                     # 최신 릴리스 설치
 #   sudo ./install.sh --local app.tar.gz  # 직접 빌드한 패키지 설치
 #   sudo ./install.sh --user pi           # 앱을 실행할 데스크톱 사용자 지정 (기본: sudo를 호출한 사용자)
 #   sudo ./install.sh --no-kiosk          # 자동 로그인/화면 설정은 건드리지 않음
+#   sudo ./install.sh --no-remote         # TeamViewer · 화상 키보드 · X11 전환 생략
+#   sudo ./install.sh --tv-token XXXX     # TeamViewer 를 회사 계정에 할당 (무인 접속)
 set -euo pipefail
 
 REPO="${ARC100_REPO:-BlessingQ/ARC-100-HMI-Public}"
@@ -29,13 +32,17 @@ SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_PKG=""
 APP_USER="${SUDO_USER:-}"
 KIOSK=1
+REMOTE=1
+TV_TOKEN=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --local) LOCAL_PKG="$2"; shift 2 ;;
     --user) APP_USER="$2"; shift 2 ;;
     --no-kiosk) KIOSK=0; shift ;;
-    -h|--help) sed -n '2,22p' "$0"; exit 0 ;;
+    --no-remote) REMOTE=0; shift ;;
+    --tv-token) TV_TOKEN="$2"; shift 2 ;;
+    -h|--help) sed -n '2,26p' "$0"; exit 0 ;;
     *) echo "알 수 없는 옵션: $1" >&2; exit 1 ;;
   esac
 done
@@ -83,6 +90,8 @@ install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-fix-ports.sh" "$APP_ROO
 ln -sfn "$APP_ROOT/bin/arc100-fix-ports" /usr/local/sbin/arc100-fix-ports
 install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-guard.sh" "$APP_ROOT/bin/arc100-guard"
 ln -sfn "$APP_ROOT/bin/arc100-guard" /usr/local/sbin/arc100-guard
+install -m 0755 -o root -g root "$SRC_DIR/scripts/arc100-remote-setup.sh" "$APP_ROOT/bin/arc100-remote-setup"
+ln -sfn "$APP_ROOT/bin/arc100-remote-setup" /usr/local/sbin/arc100-remote-setup
 ln -sfn "$APP_ROOT/bin/arc100-status"        /usr/local/bin/arc100-status
 ln -sfn "$APP_ROOT/bin/arc100-serial-capture" /usr/local/bin/arc100-serial-capture
 ln -sfn "$APP_ROOT/bin/arc100-fetch-release" /usr/local/bin/arc100-fetch-release
@@ -175,6 +184,12 @@ systemctl daemon-reload
 systemctl enable arc100-guard.service >/dev/null 2>&1 || warn "arc100-guard 활성화 실패"
 "$APP_ROOT/bin/arc100-guard" || true
 
+# ── 10. 원격 지원 · 화상 키보드 ─────────────────────────────────────────────
+if [[ $REMOTE -eq 1 ]]; then
+  log "원격 지원 · 화상 키보드: X11 전환 + onboard + TeamViewer Host"
+  "$APP_ROOT/bin/arc100-remote-setup" --user "$APP_USER" ${TV_TOKEN:+--tv-token "$TV_TOKEN"} || warn "원격 지원 설정 일부 실패 — 'sudo arc100-remote-setup' 로 다시 시도"
+fi
+
 # 전원 급차단 대비: 지금까지 쓴 파일을 SD 카드에 확정
 sync
 
@@ -195,5 +210,6 @@ echo "  포트 고정    : 앱 설정→통신 포트에서 ttyUSBn 배정 후  
 echo "  시리얼 확인  : arc100-list-serial"
 echo "  업데이트     : arc100-fetch-release --activate   /  롤백: arc100-rollback"
 echo "  자동시작 복구: sudo arc100-guard   (부팅마다 자동 실행됨)"
+echo "  원격 지원    : teamviewer info (ID) · sudo teamviewer passwd <비밀번호> · 다시 설정 sudo arc100-remote-setup"
 echo
 echo "  재부팅하면 자동 로그인 후 앱이 전체화면으로 시작됩니다:  sudo reboot"

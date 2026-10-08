@@ -18,6 +18,8 @@ rm -f /usr/local/bin/arc100-serial-capture /usr/local/bin/arc100-status /usr/loc
       /usr/local/bin/arc100-rollback /usr/local/bin/arc100-list-serial
 rm -rf /opt/arc100
 rm -f /usr/local/sbin/arc100-timesync /etc/sudoers.d/arc100-timesync
+rm -f /usr/local/sbin/arc100-remote-setup /etc/xdg/autostart/arc100-onboard.desktop /usr/share/glib-2.0/schemas/90_arc100-onboard.gschema.override /usr/share/glib-2.0/schemas/91_arc100-a11y.gschema.override
+glib-compile-schemas /usr/share/glib-2.0/schemas/ 2>/dev/null || true   # TeamViewer 는 남긴다 (지우려면 sudo apt remove teamviewer-host)
 rm -f /etc/udev/rules.d/99-arc100-rs485.rules
 udevadm control --reload-rules || true
 

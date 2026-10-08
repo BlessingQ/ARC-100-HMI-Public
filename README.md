@@ -96,6 +96,19 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 
 업데이트를 해도 이 파일은 덮어쓰지 않습니다. 이벤트 로그 DB(`/var/lib/arc100/arc100.db`, 30일 보존)도 앱 폴더 밖에 있어 **업데이트·롤백 후에 그대로 보존**됩니다.
 
+## 4-1. 원격 지원(TeamViewer) · 화상 키보드
+
+`install.sh` 가 기본으로 함께 설정합니다 (`--no-remote` 로 생략). 이미 설치된 기기는 `sudo arc100-remote-setup` 만 실행하면 됩니다.
+
+| 항목 | 내용 |
+|---|---|
+| 데스크톱 | **X11(Openbox)** 로 전환 — TeamViewer 가 Raspberry Pi 의 Wayland(labwc) 에서 접속이 "연결 중" 에 멈추는 경우가 있어 X11 을 권장. 재부팅 후 적용 |
+| 화상 키보드 | **onboard** (X11 용). 화면 구석의 키보드 아이콘을 누르거나, 글자 입력 칸을 누르면 뜬다. (squeekboard 는 Wayland 전용) |
+| TeamViewer | **TeamViewer Host** (무인 접속, 부팅하면 항상 대기). ID 확인 `teamviewer info` · 무인 접속 비밀번호 `sudo teamviewer passwd <비밀번호>` · 회사 계정 할당 `sudo arc100-remote-setup --tv-token <할당 토큰>` |
+| 되돌리기 | `sudo arc100-remote-setup --wayland` → Wayland + squeekboard (TeamViewer 는 남음) |
+
+> TeamViewer 를 회사 업무(고객 장비 지원)에 쓰려면 **유료 라이선스**가 필요합니다 (무료 = 개인용).
+
 ## 5. 운영 명령
 
 | 명령 | 설명 |
