@@ -66,7 +66,7 @@
     "bus": "weather", "model": "Spectrum WatchDog 3250DR", "enabled": true, "fallback_corridor": false, "period_s": 5, "stale_s": 300,
     "format": { "protocol": "wd3000", "temp_unit": "F", "wind_unit": "mph", "rain_unit": "in" }
   },
-  "display": { "dim_after_min": 10 },
+  "display": { "dim_after_min": 0 },
   "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
   "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 },
   "web": { "enabled": true, "port": 8080, "bind": "127.0.0.1", "public_url": "", "healthcheck_url": "", "remote_control": true }
