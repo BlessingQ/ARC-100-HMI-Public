@@ -121,6 +121,7 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | 화면 **설정·시스템 → 통신 모니터** | 회선별 TX/RX 프레임(HEX)과 드라이버 해석을 실시간으로 봄 — 무응답·ID 불일치·길이 오류를 현장에서 바로 판별 |
 | `journalctl --user -u arc100-hmi -f` | 앱 로그 실시간 보기 |
 | `systemctl --user restart arc100-hmi` | 앱 재시작 |
+| `systemctl --user start arc100-hmi` | 앱 다시 켜기 — 앱 **설정 > 시스템 > 프로그램 종료**(관리자 PIN, v0.1.50~)로 바탕화면에 나간 뒤. 바탕화면 · 메뉴의 「공기재순환 시작」과 같음 (재부팅해도 켜짐) |
 | `arc100-fetch-release --activate` | 최신 릴리스 내려받아 적용 (앱 화면의 **업데이트 확인/적용** 버튼과 동일) |
 | `arc100-fetch-release --tag v1.2.0 --activate` | 특정 버전 적용 |
 | `arc100-rollback` | 직전 버전으로 되돌리기 |
