@@ -210,6 +210,6 @@ echo "  포트 고정    : 앱 설정→통신 포트에서 ttyUSBn 배정 후  
 echo "  시리얼 확인  : arc100-list-serial"
 echo "  업데이트     : arc100-fetch-release --activate   /  롤백: arc100-rollback"
 echo "  자동시작 복구: sudo arc100-guard   (부팅마다 자동 실행됨)"
-echo "  원격 지원    : teamviewer info (ID) · sudo teamviewer passwd <비밀번호> · 다시 설정 sudo arc100-remote-setup"
+echo "  원격 지원    : sudo teamviewer info (ID) · sudo teamviewer passwd <비밀번호> · 다시 설정 sudo arc100-remote-setup"
 echo
 echo "  재부팅하면 자동 로그인 후 앱이 전체화면으로 시작됩니다:  sudo reboot"

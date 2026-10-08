@@ -66,6 +66,27 @@ if [[ $DO_X11 -eq 1 ]]; then
     raspi-config nonint do_wayland W1
     NEED_REBOOT=1
   fi
+  # X11 은 화면 보호기 · DPMS 가 10 분 뒤 모니터를 끈다 — 설치 때의 화면 꺼짐 방지는 Wayland(labwc) 용이라 적용되지 않음
+  # (2026-10-08 랩실). raspi-config 「화면 꺼짐 끄기」와 같은 파일. 화면 어둡게는 앱의 자동 어둡게가 맡는다.
+  log "X11 화면 꺼짐 방지 (/etc/X11/xorg.conf.d/10-blanking.conf)"
+  install -d /etc/X11/xorg.conf.d
+  if [[ -f /usr/share/raspi-config/10-blanking.conf ]]; then
+    cp /usr/share/raspi-config/10-blanking.conf /etc/X11/xorg.conf.d/10-blanking.conf
+  else
+    cat > /etc/X11/xorg.conf.d/10-blanking.conf <<'EOF'
+Section "Extensions"
+    Option      "DPMS" "Disable"
+EndSection
+
+Section "ServerLayout"
+    Identifier "ServerLayout0"
+    Option "StandbyTime" "0"
+    Option "SuspendTime" "0"
+    Option "OffTime"     "0"
+    Option "BlankTime"   "0"
+EndSection
+EOF
+  fi
 fi
 
 # ── 2. 화상 키보드 onboard ───────────────────────────────────────────────────
@@ -134,13 +155,13 @@ if [[ $DO_TEAMVIEWER -eq 1 ]]; then
   fi
   sleep 3
   TV_ID="$(teamviewer info 2>/dev/null | grep -oE 'TeamViewer ID:[^0-9]*[0-9]+' | grep -oE '[0-9]+$' || true)"
-  [[ -n "$TV_ID" ]] && log "TeamViewer ID: $TV_ID" || warn "TeamViewer ID 를 아직 못 읽었습니다 — 재부팅 후 'teamviewer info'"
+  [[ -n "$TV_ID" ]] && log "TeamViewer ID: $TV_ID" || warn "TeamViewer ID 를 아직 못 읽었습니다 — 재부팅 후 'sudo teamviewer info'"
 fi
 
 sync
 echo
 log "완료."
 [[ $DO_KEYBOARD -eq 1 ]] && echo "  화상 키보드 : 화면 구석의 키보드 아이콘을 누르거나, 글자 입력 칸을 누르면 뜹니다"
-[[ $DO_TEAMVIEWER -eq 1 ]] && echo "  TeamViewer  : ID 확인 'teamviewer info' · 무인 접속 비밀번호 'sudo teamviewer passwd <비밀번호>' (또는 --tv-token 으로 회사 계정 할당)"
+[[ $DO_TEAMVIEWER -eq 1 ]] && echo "  TeamViewer  : ID 확인 'sudo teamviewer info' (ID 는 관리자만 읽을 수 있음) · 무인 접속 비밀번호 'sudo teamviewer passwd <비밀번호>' (또는 --tv-token 으로 회사 계정 할당)"
 [[ $NEED_REBOOT -eq 1 ]] && echo "  재부팅해야 X11 화면으로 바뀝니다:  sudo reboot"
 echo "  되돌리기    : sudo arc100-remote-setup --wayland   (Wayland + squeekboard)"
