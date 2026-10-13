@@ -116,8 +116,6 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | `arc100-status` | 버전·서비스·포트·헬스 상태 요약 |
 | `arc100-serial-capture` | 시리얼 원문 캡처(HEX·ASCII), `--baud scan` 보레이트 탐색, `--send` 질의, `--stop-app` — 프로토콜 미확정 장비(기상대) 시험용 |
 | `sudo arc100-fix-ports` | 현재 회선→포트 배정을 udev 고정 이름(`/dev/rs485-*`)으로 굳히고 site.json 갱신 (재부팅 시 ttyUSB 번호 변경 대비) |
-
-댐퍼(HM-220VL4) 결선 — IOC OUT1/OUT3 = 액추에이터 ② 전원(보조릴레이), OUT2/OUT4 = ③④ 기동신호 접점(ON 열림), **DI 5/6 = ⑤⑥ 기동확인(전개) 접점**. IOC 의 Pair(인터록) 모드는 **꺼야** 합니다. 예전 `open/close` 설정은 앱이 자동으로 `power/dir/open_fb` 로 바꿉니다.
 | 화면 **설정·시스템 → 통신 모니터** | 회선별 TX/RX 프레임(HEX)과 드라이버 해석을 실시간으로 봄 — 무응답·ID 불일치·길이 오류를 현장에서 바로 판별 |
 | `journalctl --user -u arc100-hmi -f` | 앱 로그 실시간 보기 |
 | `systemctl --user restart arc100-hmi` | 앱 재시작 |
@@ -127,6 +125,8 @@ RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** �
 | `arc100-rollback` | 직전 버전으로 되돌리기 |
 | `sudo arc100-guard` | 자동 시작 유닛 점검·복구 (부팅마다 `arc100-guard.service` 가 자동 실행) |
 | `sudo ~/ARC-100-HMI-Public/uninstall.sh [--purge]` | 제거 (`--purge`: 설정·로그까지) |
+
+IOC-100 출력 배정 (배전반 장비배치도 v13, 2026-10-13) — OUT1·2 = 배출·재순환 댐퍼 ③④ 열림 접점 (HM-220VL4 ② 전원 상시, ON 열림 · OFF 닫힘), OUT3 = 전해수기 운전 접점, OUT4 = 가압펌프, OUT5~7 = 순환펌프 1~3, OUT8·9 = 배수펌프 1·2, OUT10 = 예비 접점 (수동 모드에서만 ON/OFF). **DI 5/6 = 댐퍼 ⑤⑥ 전개 확인 접점**. IOC 의 Pair(인터록) 모드는 **꺼야** 합니다. 예전 기본 배정 그대로인 site.json 은 앱이 새 배정으로 자동으로 바꿉니다.
 
 ### 5-1. 원격 웹 외부 공개 (Tailscale Funnel, 무료 · 포트포워딩 불필요)
 
