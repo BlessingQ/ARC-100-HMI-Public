@@ -6,7 +6,8 @@
     "modbus":   { "port": "/dev/rs485-modbus",   "baud": 9600 },
     "ioc":      { "port": "/dev/rs485-ioc",      "baud": 9600 },
     "inverter": { "port": "/dev/rs485-inverter", "baud": 9600 },
-    "weather":  { "port": "/dev/rs232-weather",  "baud": 9600 }
+    "weather":  { "port": "/dev/rs232-weather",  "baud": 9600 },
+    "damper":   { "port": "",                    "baud": 9600 }
   },
   "inverters": [
     { "tag": "INV1", "slave": 21, "role": "supply",  "kw_code": 5, "hz_min": 12.0, "hz_max": 60.0, "rated_cmh_60hz": null, "no_load_a": null },

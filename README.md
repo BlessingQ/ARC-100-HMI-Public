@@ -11,7 +11,7 @@
 | 보드 | Raspberry Pi 5 (4 GB 이상 권장) |
 | OS | Raspberry Pi OS **64-bit, Desktop** (Bookworm 이상). Lite 불가 — 화면이 필요합니다 |
 | 화면 | 10.1" 1920×1080 정전식 터치 (HDMI + USB 터치) |
-| 통신 | 절연형 USB-RS485 3채널 (ch1 SensorNode ×13, ch2 IOC-100 ×1, ch3 HM-100 ×2(ID 1·2) + 인버터 ×3) + USB-RS232 1채널 (ch4 외부 기상대 WatchDog 3250DR, 옵션 — 자발 송신 장치라 단독 회선) |
+| 통신 | 절연형 USB-RS485 3채널 (ch1 SensorNode ×13, ch2 IOC-100 ×1, ch3 HM-100 ×2(ID 1·2) + 인버터 ×3) + USB-RS232 1채널 (ch4 외부 기상대 WatchDog 3250DR, 옵션 — 자발 송신 장치라 단독 회선) + USB-RS485 1채널 (ch5 댐퍼 제어기 IVC-300 ×2, USB 허브) |
 | 네트워크 | 설치·업데이트 시에만 인터넷 필요. 운전 중에는 불필요 |
 
 ## 2. 설치 (한 줄)
@@ -64,7 +64,7 @@ udev 고정 이름(`/dev/rs485-*`)을 쓰고 싶으면 예전처럼:
 # 1) 앱 화면 설정 → 통신 포트 에서 회선마다 지금 맞는 ttyUSBn 을 배정·저장 (통신 모니터로 응답 확인)
 # 2) 그 배정을 그대로 고정:
 sudo arc100-fix-ports                    # 어댑터 serial(또는 USB 구멍 위치)로 udev 규칙 생성 + site.json 을 /dev/rs485-* 로 갱신
-ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-inverter (+ rs232-weather)
+ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-inverter (+ rs232-weather · rs485-damper)
 ```
 
 - FTDI 처럼 칩 고유 serial 이 있는 어댑터는 **USB 구멍을 바꿔 꽂아도** 유지됩니다.
@@ -77,6 +77,7 @@ ls -l /dev/rs485-* /dev/rs232-*          # rs485-modbus, rs485-ioc, rs485-invert
 | `/dev/rs485-ioc` | ch2 | IOC-100 #1 (ID 1) |
 | `/dev/rs485-inverter` | ch3 | **HM-100 #1 (ID 1) · HM-100 #2 (ID 2)** + LSLV-G100 인버터 국번 21 / 22 / 23 — 9600 8N1 공유, 앱이 1 → 2 → 21 → 22 → 23 순으로 순회 (`site.json` `hm100[].slave`) |
 | `/dev/rs232-weather` | ch4 | 외부 기상대 스펙트럼 WatchDog 3250DR (AUX RS-232 9600) — 없으면 복도 센서로 대체 |
+| `/dev/rs485-damper` | ch5 | 댐퍼 제어기 IVC-300 1-1 재순환 · 1-2 배출 (USB 허브 + RS-485 컨버터 하나 더) — 통신 포트에서 ch5 를 배정하면 출력제어기 ch2 와 따로 돎, 비우면 ch2 공유 |
 
 RS-485 3개 링크가 모두 없으면 앱은 **출력 쓰기를 잠근 채** 기동합니다 (표시만 함).
 

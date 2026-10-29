@@ -9,6 +9,8 @@
 #
 #   sudo arc100-fix-ports            # 현재 배정 기준으로 규칙 생성 + site.json 갱신
 #   sudo arc100-fix-ports --dry-run  # 규칙만 화면에 출력 (파일 변경 없음)
+#
+# 2026-10-29: ch5 댐퍼 제어기 회선 (damper → /dev/rs485-damper) 추가 — USB 허브 + RS-485 컨버터 하나 더.
 set -euo pipefail
 CONF="${ARC100_CONFIG:-/etc/arc100/site.json}"
 RULES=/etc/udev/rules.d/99-arc100-rs485.rules
@@ -18,14 +20,15 @@ DRY=0
 command -v jq >/dev/null || { echo "jq 가 필요합니다 (sudo apt install jq)" >&2; exit 1; }
 [[ -f "$CONF" ]] || { echo "설정 파일이 없습니다: $CONF" >&2; exit 1; }
 
-declare -A LINK=([modbus]=rs485-modbus [ioc]=rs485-ioc [inverter]=rs485-inverter [weather]=rs232-weather)
-declare -A LABEL=([modbus]="ch1 센서·HM-100 #1" [ioc]="ch2 IOC-100" [inverter]="ch3 인버터·HM-100 #2" [weather]="ch4 기상대 RS-232")
+BUSES=(modbus ioc inverter weather damper)
+declare -A LINK=([modbus]=rs485-modbus [ioc]=rs485-ioc [inverter]=rs485-inverter [weather]=rs232-weather [damper]=rs485-damper)
+declare -A LABEL=([modbus]="ch1 센서" [ioc]="ch2 출력제어기 IOC-100" [inverter]="ch3 인버터·pH 미터" [weather]="ch4 기상대 RS-232" [damper]="ch5 댐퍼 제어기 IVC-300")
 rules=()
 jqset=()
 seen_keys=()
 warn=0
 
-for bus in modbus ioc inverter weather; do
+for bus in "${BUSES[@]}"; do
   port="$(jq -r ".buses.${bus}.port // empty" "$CONF")"
   link="${LINK[$bus]}"
   if [[ -z "$port" || "$port" == sim://* ]]; then
@@ -91,7 +94,7 @@ udevadm settle || true
 sleep 1
 
 ok=1
-for bus in modbus ioc inverter weather; do
+for bus in "${BUSES[@]}"; do
   link="${LINK[$bus]}"
   for s in "${jqset[@]}"; do
     [[ "$s" == *"/dev/$link"* ]] || continue
