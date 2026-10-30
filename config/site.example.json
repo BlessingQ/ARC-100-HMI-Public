@@ -67,7 +67,11 @@
     "format": { "protocol": "wd3000", "temp_unit": "F", "wind_unit": "mph", "rain_unit": "in" }
   },
   "display": { "dim_after_min": 0 },
-  "pumps": { "drain_run_min": 8, "drain_rest_min": 1, "boost_rule": "NONE" },
+  "pumps": {
+    "drain_rest_s": 600, "drain_run_s": 5,
+    "circ_1_run_s": 600, "circ_1_rest_s": 0, "circ_2_run_s": 600, "circ_2_rest_s": 0, "circ_3_run_s": 600, "circ_3_rest_s": 0,
+    "boost_rule": "NONE"
+  },
   "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 },
   "web": { "enabled": true, "port": 8080, "bind": "127.0.0.1", "public_url": "", "healthcheck_url": "", "remote_control": true }
 }
