@@ -55,11 +55,11 @@
   "control": {
     "tset_c": 24.0, "temp_tolerance_c": 1.0, "rh_low": 50, "rh_high": 70,
     "nh3_high_ppm": 25, "co2_high_ppm": 5000,
-    "vent_min": 0, "vent_max": 100, "mix_min": 0, "mix_max": 80,
+    "vent_min": 20, "vent_max": 100, "mix_min": 0, "mix_max": 80,
     "period_s": 60, "vent_semantics": "TOTAL_SUPPLY",
     "head_count": 200, "cmh_per_head": 255, "source_sensor": "node13",
     "gas_aggregate": "max", "tout_source": "corridor",
-    "limit_hz_by_qmax": true, "supply_offset_pct": 0, "gas_release_ratio": 0.9,
+    "gas_release_ratio": 0.9,
     "manual_timeout_h": 2, "nh3_source": "dol"
   },
   "weather": {
