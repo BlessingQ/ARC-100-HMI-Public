@@ -20,7 +20,7 @@
   "outputs": {
     "DMP_EXHAUST_DIR": [1, 1], "DMP_RECIRC_DIR": [1, 2], "ELECTROLYZER": [1, 3], "SPARE_1": [1, 4], "PUMP_BOOST": [1, 5],
     "PUMP_CIRC_1": [1, 6], "PUMP_CIRC_2": [1, 7], "PUMP_CIRC_3": [1, 8],
-    "PUMP_DRAIN": [1, 9], "PUMP_DRAIN_2": [1, 10]
+    "PUMP_DRAIN": [1, 9]
   },
   "inputs": {
     "E_STOP": [1, 1], "LEVEL_ACID_STRONG": [1, 2], "LEVEL_ACID_WEAK": [1, 3], "ROOM_FAN_EOCR_TRIP": [1, 4],
@@ -67,7 +67,7 @@
     "format": { "protocol": "wd3000", "temp_unit": "F", "wind_unit": "mph", "rain_unit": "in" }
   },
   "display": { "dim_after_min": 0 },
-  "pumps": { "drain_period_s": 900, "drain_on_s": 30, "boost_rule": "RUN_WHILE_OPERATING" },
+  "pumps": { "drain_run_min": 8, "drain_rest_min": 1, "boost_rule": "RUN_WHILE_OPERATING" },
   "update": { "repo": "BlessingQ/ARC-100-HMI-Public", "channel": "stable", "auto": false, "check_interval_h": 6 },
   "web": { "enabled": true, "port": 8080, "bind": "127.0.0.1", "public_url": "", "healthcheck_url": "", "remote_control": true }
 }
